@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'home.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,9 +28,9 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 50),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.push(
+                  Navigator.pushNamed(
                     context,
-                    MaterialPageRoute(builder: (context) => const HomePage()),
+                    '/home',
                   );
                 },
                 style: ElevatedButton.styleFrom(
@@ -45,6 +43,30 @@ class LoginPage extends StatelessWidget {
                 ),
                 child: const Text(
                   "Login",
+                  style: TextStyle(
+                    color: Colors.deepPurple,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(
+                    context,
+                    '/signup',
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 90, vertical: 20),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(30), // Botón redondeado
+                  ),
+                ),
+                child: const Text(
+                  "Sign Up",
                   style: TextStyle(
                     color: Colors.deepPurple,
                     fontSize: 20,
