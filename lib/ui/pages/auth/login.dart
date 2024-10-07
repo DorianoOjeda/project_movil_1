@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../handler.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -17,16 +18,8 @@ class LoginPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Container(
-                height: 300,
-                width: 300,
-                decoration: BoxDecoration(
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/logo.jpeg"),
-                      fit: BoxFit.cover,
-                    ),
-                    borderRadius: BorderRadius.circular(400)),
-              ),
+              getLogo(300, 300),
+              const SizedBox(height: 50),
               const Text(
                 "Mi Mejor Ser",
                 style: TextStyle(

@@ -28,53 +28,9 @@ class InitPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 50),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/login',
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 100, vertical: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Botón redondeado
-                  ),
-                ),
-                child: const Text(
-                  "Login",
-                  style: TextStyle(
-                    color: Colors.deepPurple,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
+              getNavigationButton('/login', "Login"),
               const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pushNamed(
-                    context,
-                    '/signup',
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 90, vertical: 20),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30), // Botón redondeado
-                  ),
-                ),
-                child: const Text(
-                  "Sign Up",
-                  style: TextStyle(
-                    color: Colors.deepPurple,
-                    fontSize: 20,
-                  ),
-                ),
-              ),
+              getNavigationButton('/signup', "Sign Up"),
             ],
           ),
         ),

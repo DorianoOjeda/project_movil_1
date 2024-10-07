@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
+import '../../../handler.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
@@ -13,9 +14,6 @@ class _SignupPageState extends State<SignupPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Register'),
-      ),
       body: Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -34,11 +32,7 @@ class _SignupPageState extends State<SignupPage> {
                   Padding(
                     padding: const EdgeInsets.only(top: 20.0),
                     child: Center(
-                      child: Container(
-                        width: 200,
-                        height: 150,
-                        child: Image.asset('assets/images/logo.jpeg'),
-                      ),
+                      child: getLogo(100, 100),
                     ),
                   ),
                   Padding(
@@ -51,7 +45,7 @@ class _SignupPageState extends State<SignupPage> {
                         MinLengthValidator(3,
                             errorText:
                                 'First name must be at least 3 characters long'),
-                      ]),
+                      ]).call,
                       decoration: const InputDecoration(
                           labelStyle: TextStyle(color: Colors.white),
                           hintText: 'Enter first name',
@@ -76,7 +70,7 @@ class _SignupPageState extends State<SignupPage> {
                         MinLengthValidator(3,
                             errorText:
                                 'Last name must be at least 3 characters long'),
-                      ]),
+                      ]).call,
                       decoration: const InputDecoration(
                           labelStyle: TextStyle(color: Colors.white),
                           hintText: 'Enter last name',
@@ -100,7 +94,7 @@ class _SignupPageState extends State<SignupPage> {
                             errorText: 'Please enter your email address'),
                         EmailValidator(
                             errorText: 'Please enter a valid email address'),
-                      ]),
+                      ]).call,
                       decoration: const InputDecoration(
                           labelStyle: TextStyle(color: Colors.white),
                           hintText: 'Email',
@@ -130,7 +124,7 @@ class _SignupPageState extends State<SignupPage> {
                         PatternValidator(r'(?=.*?[#_?!@$%^&*-])',
                             errorText:
                                 'Passwords must have at least one special character'),
-                      ]),
+                      ]).call,
                       decoration: const InputDecoration(
                         labelStyle: TextStyle(color: Colors.white),
                         hintText: 'Password',
@@ -153,7 +147,8 @@ class _SignupPageState extends State<SignupPage> {
                       height: 50,
                       child: ElevatedButton(
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 112, 2, 255),
+                          backgroundColor:
+                              const Color.fromARGB(255, 112, 2, 255),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
@@ -167,7 +162,7 @@ class _SignupPageState extends State<SignupPage> {
                             // Form is valid, proceed with your logic
                             Navigator.pushNamed(
                               context,
-                              '/',
+                              '/initialPage',
                             );
                           }
                         },
