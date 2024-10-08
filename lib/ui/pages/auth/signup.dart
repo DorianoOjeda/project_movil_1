@@ -30,13 +30,26 @@ class _SignupPageState extends State<SignupPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: const EdgeInsets.only(top: 20.0),
+                    padding: const EdgeInsets.only(
+                      top: 100.0,
+                      bottom: 20.0,
+                    ),
                     child: Center(
-                      child: getLogo(100, 100),
+                      child: getLogo(150, 150),
                     ),
                   ),
+                  const Center(
+                      child: Text(
+                    "Mi Mejor Ser",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+                  const SizedBox(height: 20),
                   Padding(
-                    padding: const EdgeInsets.all(12.0),
+                    padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       style: const TextStyle(color: Colors.white),
                       validator: MultiValidator([
@@ -139,8 +152,8 @@ class _SignupPageState extends State<SignupPage> {
                       ),
                     ),
                   ),
-                  Center(
-                      child: Padding(
+                  const SizedBox(height: 10),
+                  Padding(
                     padding: const EdgeInsets.all(18.0),
                     child: SizedBox(
                       width: MediaQuery.of(context).size.width,
@@ -168,7 +181,7 @@ class _SignupPageState extends State<SignupPage> {
                         },
                       ),
                     ),
-                  )),
+                  ),
                 ],
               ),
             ),
