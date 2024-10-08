@@ -18,16 +18,18 @@ class InitPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              getLogo(300, 300),
-              const Text(
-                "Mi Mejor Ser",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
+              getLogo(250, 250),
+              const Padding(
+                padding: EdgeInsets.all(30),
+                child: Text(
+                  "Mi Mejor Ser",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              const SizedBox(height: 50),
               getNavigationButton('/login', "Login"),
               const SizedBox(height: 20),
               getNavigationButton('/signup', "Sign Up"),
