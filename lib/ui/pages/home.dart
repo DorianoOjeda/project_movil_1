@@ -10,10 +10,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  List<Map<String, dynamic>> tareas = [];
+
+  void _addTarea(Map<String, dynamic> tarea) {
+    setState(() {
+      tareas.add(tarea);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2, // numero de pestañas
+      length: 2, // número de pestañas
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Mi Mejor Ser"),
@@ -35,7 +43,7 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           children: [
             _buildCalendar(),
-            const TareasPage(),
+            TareasPage(tareas: tareas, onTareaAdd: _addTarea), // Pasar tareas
           ],
         ),
       ),
@@ -50,7 +58,7 @@ class _HomePageState extends State<HomePage> {
           lastDay: DateTime.utc(2030, 12, 31),
           focusedDay: DateTime.now(),
         ),
-        //widget para superrachas
+        // widget para superrachas
         _buildSuperStreaks(),
       ],
     );
@@ -60,7 +68,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.only(top: 10),
-      color: const Color.fromARGB(255, 255, 217, 0),
+      color: Color.fromARGB(255, 255, 217, 0),
       child: const Column(
         children: [
           Text("SuperRachas",
