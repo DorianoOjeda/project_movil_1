@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'tareas.dart';
+import 'tareas/tareas_list.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomePage extends StatefulWidget {
@@ -35,7 +35,7 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           children: [
             _buildCalendar(),
-            TareasPage(),
+            const TareasPage(),
           ],
         ),
       ),
@@ -60,7 +60,7 @@ class _HomePageState extends State<HomePage> {
     return Container(
       padding: const EdgeInsets.all(8),
       margin: const EdgeInsets.only(top: 10),
-      color: Color.fromARGB(255, 255, 217, 0),
+      color: const Color.fromARGB(255, 255, 217, 0),
       child: const Column(
         children: [
           Text("SuperRachas",
