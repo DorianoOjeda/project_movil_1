@@ -16,6 +16,7 @@ class _NavigationState extends State<Navigation> {
     return Scaffold(
       body: <Widget>[
         getHomePage(),
+        getCalendar(),
       ][currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
