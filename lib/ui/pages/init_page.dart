@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../handler.dart';
+import 'package:project_1/handler.dart';
 
 class InitPage extends StatelessWidget {
   const InitPage({super.key});
