@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/handler.dart';
 
-class Navigation extends StatefulWidget {
-  const Navigation({super.key});
+class NavBar extends StatefulWidget {
+  const NavBar({super.key});
 
   @override
-  State<Navigation> createState() => _NavigationState();
+  State<NavBar> createState() => _NavBarState();
 }
 
-class _NavigationState extends State<Navigation> {
+class _NavBarState extends State<NavBar> {
   int currentIndex = 0;
 
   @override
@@ -16,7 +16,8 @@ class _NavigationState extends State<Navigation> {
     return Scaffold(
       body: <Widget>[
         getHomePage(),
-        getCalendar(),
+        getCalendarPage(),
+        getProfilePage(),
       ][currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,

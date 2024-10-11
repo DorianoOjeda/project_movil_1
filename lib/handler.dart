@@ -1,8 +1,11 @@
-import './ui/components/logo.dart';
-import './ui/components/navigationbtn.dart';
-import 'ui/components/calendar_widget.dart';
-import 'ui/pages/home.dart';
-import 'ui/pages/calendar.dart';
+import 'package:project_1/ui/components/logo.dart';
+import 'package:project_1/ui/components/navigationbtn.dart';
+import 'package:project_1/ui/components/calendar_widget.dart';
+import 'package:project_1/ui/pages/home.dart';
+import 'package:project_1/ui/pages/calendar.dart';
+import 'package:project_1/ui/pages/profile/profile.dart';
+import 'package:project_1/ui/components/profilemenu_widget.dart';
+import 'package:flutter/material.dart';
 
 /// This handler will be use to get reusable components and functions.
 
@@ -18,11 +21,28 @@ CalendarWidget getCalendarWidget() {
   return const CalendarWidget();
 }
 
+ProfileMenuWidget getProfileMenuWidget(
+    {required String title,
+    required IconData icon,
+    MaterialColor? textColor,
+    bool? endIcon,
+    required VoidCallback onPress}) {
+  return ProfileMenuWidget(
+    title: title,
+    icon: icon,
+    onPress: onPress,
+  );
+}
+
 /// getPages
 HomePage getHomePage() {
   return const HomePage();
 }
 
-Calendar getCalendar() {
+Calendar getCalendarPage() {
   return const Calendar();
+}
+
+Profile getProfilePage() {
+  return const Profile();
 }
