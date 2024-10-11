@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tareas/tareas_list.dart';
+import 'tareas/tareas_add.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class HomePage extends StatefulWidget {
@@ -45,6 +46,30 @@ class _HomePageState extends State<HomePage> {
             _buildCalendar(),
             TareasPage(tareas: tareas, onTareaAdd: _addTarea), // Pasar tareas
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          heroTag: 'uniqueFabTag',
+          onPressed: () async {
+            // Navegacion para agregar una nueva tarea
+            final nuevaTarea = await Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => TareasAddPage(
+                  onSave: (tarea) {
+                    _addTarea(tarea); // Agregar la tarea a la lista
+                  },
+                ),
+              ),
+            );
+
+            // Verificar si se creo una nueva tarea antes de agregarla a la lista
+            if (nuevaTarea != null) {
+              setState(() {
+                tareas.add(nuevaTarea);
+              });
+            }
+          },
+          child: const Icon(Icons.add),
         ),
       ),
     );
