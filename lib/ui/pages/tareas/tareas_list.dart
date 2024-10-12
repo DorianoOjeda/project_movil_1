@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'tareas_add.dart';
 import 'package:intl/intl.dart';
+import 'tareas_add.dart';
+import 'rachas.dart'; // Importamos el archivo de rachas
 
 class TareasPage extends StatefulWidget {
   final List<Map<String, dynamic>> tareas;
@@ -23,37 +24,17 @@ class _TareasPageState extends State<TareasPage> {
     // Actualizar el estado de completado de la tarea booleana
     setState(() {
       tarea['completada'] = true;
-    });
 
-    // Verificar si la tarea es repetitiva y reprogramarla
-    if (tarea['frecuencia'] != 'Nunca') {
-      DateTime nuevaFecha = DateTime.parse(tarea['fechaInicio']);
-      DateTime today = DateTime.now();
+      // Actualizar la racha al completarse
+      RachasManager.actualizarRacha(tarea, true);
 
-      if (tarea['frecuencia'] == 'Diariamente') {
-        nuevaFecha = today.add(Duration(days: 1));
-      } else if (tarea['frecuencia'] == 'Semanalmente') {
-        nuevaFecha = today.add(Duration(
-            days: 7 - today.weekday)); // Proximo mismo dia de la semana
-      } else if (tarea['frecuencia'] == 'Mensualmente') {
-        nuevaFecha = DateTime(
-            today.year, today.month + 1, nuevaFecha.day); // Proximo mes
+      // Verificar si la tarea es repetitiva y reprogramarla
+      if (tarea['frecuencia'] != 'Nunca') {
+        DateTime nuevaFecha = RachasManager.calcularSiguienteFecha(tarea);
+        tarea['fechaInicio'] = nuevaFecha.toIso8601String();
+        tarea['completada'] = false; // Resetear para la próxima aparición
       }
-
-      // Actualizar la tarea con la nueva fecha
-      setState(() {
-        widget.onTareaAdd({
-          'titulo': tarea['titulo'],
-          'descripcion': tarea['descripcion'],
-          'tipo': tarea['tipo'],
-          'cantidad': tarea['cantidad'],
-          'cantidadProgreso': tarea['cantidadProgreso'],
-          'frecuencia': tarea['frecuencia'],
-          'fechaInicio': nuevaFecha.toIso8601String(),
-          'completada': false,
-        });
-      });
-    }
+    });
   }
 
   void _incrementarCantidad(int index) {
@@ -66,6 +47,16 @@ class _TareasPageState extends State<TareasPage> {
         // Si la cantidad es alcanzada, marcar como completada
         if (tarea['cantidadProgreso'] >= tarea['cantidad']) {
           tarea['completada'] = true;
+
+          // Actualizar la racha al completarse
+          RachasManager.actualizarRacha(tarea, true);
+
+          // Verificar si la tarea es repetitiva y reprogramarla
+          if (tarea['frecuencia'] != 'Nunca') {
+            DateTime nuevaFecha = RachasManager.calcularSiguienteFecha(tarea);
+            tarea['fechaInicio'] = nuevaFecha.toIso8601String();
+            tarea['completada'] = false; // Resetear para la próxima aparición
+          }
         }
       }
     });
@@ -118,8 +109,7 @@ class _TareasPageState extends State<TareasPage> {
 
           if (tarea['tipo'] == 'cuantificable') {
             final int cantidadMaxima = tarea['cantidad'] ?? 1;
-            final int progresoActual = tarea['cantidadProgreso'] ??
-                0; // Inicializar progreso en 0 si es nulo
+            final int progresoActual = tarea['cantidadProgreso'] ?? 0;
 
             return ListTile(
               title: Text(tarea['titulo']),
@@ -128,7 +118,7 @@ class _TareasPageState extends State<TareasPage> {
                 children: [
                   if (tarea['descripcion'] != null &&
                       tarea['descripcion'].isNotEmpty)
-                    Text(tarea['descripcion']), // Mostrar descripcion si existe
+                    Text(tarea['descripcion']),
                   Text("Progreso: $progresoActual / $cantidadMaxima"),
                   Text("Fecha siguiente: $fechaSiguiente"),
                   LinearProgressIndicator(
@@ -167,9 +157,10 @@ class _TareasPageState extends State<TareasPage> {
                 children: [
                   if (tarea['descripcion'] != null &&
                       tarea['descripcion'].isNotEmpty)
-                    Text(tarea['descripcion']), // Mostrar descripción si existe
+                    Text(tarea['descripcion']),
                   Text("Repetir: ${tarea['frecuencia']}"),
                   Text("Fecha siguiente: $fechaSiguiente"),
+                  Text("Racha: ${tarea['racha'] ?? 0} días"), // Mostrar racha
                 ],
               ),
               trailing: tarea['completada']
@@ -192,6 +183,7 @@ class _TareasPageState extends State<TareasPage> {
               builder: (context) => TareasAddPage(
                 onSave: (tarea) {
                   tarea['cantidadProgreso'] = 0; // Inicializar progreso en 0
+                  tarea['racha'] = 0; // Inicializar racha en 0
                   widget.onTareaAdd(tarea);
                 },
               ),
