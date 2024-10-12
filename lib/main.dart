@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/ui/pages/auth/signup.dart';
 import 'package:project_1/ui/pages/init_page.dart';
-import 'ui/pages/auth/login.dart';
-import 'ui/pages/home.dart';
+import 'package:project_1/ui/pages/navbar.dart';
+import 'package:project_1/ui/pages/auth/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
           '/initialPage': (context) => const InitPage(),
           '/login': (context) => const LoginPage(),
           '/signup': (context) => const SignupPage(),
-          '/home': (context) => const HomePage(),
+          '/navigation': (context) => const NavBar(),
         });
   }
 }
