@@ -21,18 +21,17 @@ class _TareasPageState extends State<TareasPage> {
       return; // No permitir completar directamente tareas cuantificables con el check
     }
 
-    // Actualizar el estado de completado de la tarea booleana
     setState(() {
+      // Marcar como completada la tarea
       tarea['completada'] = true;
 
       // Actualizar la racha al completarse
       RachasManager.actualizarRacha(tarea, true);
 
-      // Verificar si la tarea es repetitiva y reprogramarla
+      // Verificar si la tarea es repetitiva y reprogramarla para la próxima fecha
       if (tarea['frecuencia'] != 'Nunca') {
         DateTime nuevaFecha = RachasManager.calcularSiguienteFecha(tarea);
         tarea['fechaInicio'] = nuevaFecha.toIso8601String();
-        tarea['completada'] = false; // Resetear para la próxima aparición
       }
     });
   }
@@ -42,7 +41,7 @@ class _TareasPageState extends State<TareasPage> {
 
     setState(() {
       if (tarea['cantidadProgreso'] < tarea['cantidad']) {
-        tarea['cantidadProgreso'] = tarea['cantidadProgreso'] + 1;
+        tarea['cantidadProgreso'] += 1;
 
         // Si la cantidad es alcanzada, marcar como completada
         if (tarea['cantidadProgreso'] >= tarea['cantidad']) {
@@ -55,7 +54,6 @@ class _TareasPageState extends State<TareasPage> {
           if (tarea['frecuencia'] != 'Nunca') {
             DateTime nuevaFecha = RachasManager.calcularSiguienteFecha(tarea);
             tarea['fechaInicio'] = nuevaFecha.toIso8601String();
-            tarea['completada'] = false; // Resetear para la próxima aparición
           }
         }
       }
@@ -68,7 +66,7 @@ class _TareasPageState extends State<TareasPage> {
     // No permitir disminuir cantidad si ya está completada
     if (!tarea['completada'] && tarea['cantidadProgreso'] > 0) {
       setState(() {
-        tarea['cantidadProgreso'] = tarea['cantidadProgreso'] - 1;
+        tarea['cantidadProgreso'] -= 1;
       });
     }
   }
@@ -82,15 +80,44 @@ class _TareasPageState extends State<TareasPage> {
       return "Mañana";
     } else if (frecuencia == 'Semanalmente') {
       proximaFecha =
-          today.add(Duration(days: 7 - today.weekday)); // Proxima semana
+          today.add(Duration(days: 7 - today.weekday)); // Próxima semana
       return DateFormat('yyyy-MM-dd').format(proximaFecha);
     } else if (frecuencia == 'Mensualmente') {
       proximaFecha =
-          DateTime(today.year, today.month + 1, fechaInicio.day); // Proximo mes
+          DateTime(today.year, today.month + 1, fechaInicio.day); // Próximo mes
       return DateFormat('yyyy-MM-dd').format(proximaFecha);
     } else {
       return DateFormat('yyyy-MM-dd').format(fechaInicio);
     }
+  }
+
+  bool _mostrarTareaHoy(DateTime fechaInicio, String frecuencia) {
+    DateTime today = DateTime.now();
+
+    // Mostrar la tarea incluso si ha sido completada
+    if (today.isBefore(fechaInicio)) {
+      return false; // No mostrar tareas antes de la fecha de inicio
+    }
+
+    if (frecuencia == 'Diariamente') {
+      return today.difference(fechaInicio).inDays % 1 == 0; // Diaria
+    } else if (frecuencia == 'Semanalmente') {
+      return today.difference(fechaInicio).inDays % 7 == 0; // Semanal
+    } else if (frecuencia == 'Mensualmente') {
+      return today.day == fechaInicio.day; // Mensual
+    }
+    return isSameDay(today, fechaInicio); // Mostrar solo si es el mismo día
+  }
+
+  bool _desbloquearTarea(DateTime fechaInicio) {
+    DateTime today = DateTime.now();
+    return isSameDay(today, fechaInicio); // Desbloquear si es la fecha actual
+  }
+
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 
   @override
@@ -106,6 +133,13 @@ class _TareasPageState extends State<TareasPage> {
           DateTime fechaInicio = DateTime.parse(tarea['fechaInicio']);
           String fechaSiguiente =
               _getFechaSiguiente(fechaInicio, tarea['frecuencia']);
+
+          // Determinar si la tarea debe mostrarse hoy
+          bool mostrarHoy = _mostrarTareaHoy(fechaInicio, tarea['frecuencia']);
+          bool desbloquear = _desbloquearTarea(fechaInicio);
+
+          // Siempre mostrar la tarea, incluso si está completada
+          if (!mostrarHoy && !tarea['completada']) return Container();
 
           if (tarea['tipo'] == 'cuantificable') {
             final int cantidadMaxima = tarea['cantidad'] ?? 1;
@@ -136,9 +170,11 @@ class _TareasPageState extends State<TareasPage> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.add),
-                        onPressed: () {
-                          _incrementarCantidad(index);
-                        },
+                        onPressed: desbloquear
+                            ? () {
+                                _incrementarCantidad(index);
+                              }
+                            : null, // Solo permitir si está desbloqueada
                       ),
                     ],
                   ),
@@ -166,10 +202,15 @@ class _TareasPageState extends State<TareasPage> {
               trailing: tarea['completada']
                   ? const Icon(Icons.check, color: Colors.green)
                   : IconButton(
-                      icon: const Icon(Icons.check_circle),
-                      onPressed: () {
-                        _marcarTareaCompletada(index);
-                      },
+                      icon: desbloquear
+                          ? const Icon(Icons.check_circle)
+                          : const Icon(Icons
+                              .lock), // Mostrar bloqueo si no está desbloqueada
+                      onPressed: desbloquear
+                          ? () {
+                              _marcarTareaCompletada(index);
+                            }
+                          : null, // Solo permitir si está desbloqueada
                     ),
             );
           }
@@ -182,7 +223,7 @@ class _TareasPageState extends State<TareasPage> {
             MaterialPageRoute(
               builder: (context) => TareasAddPage(
                 onSave: (tarea) {
-                  tarea['cantidadProgreso'] = 0; // Inicializar progreso en 0
+                  tarea['cantidadProgreso'] = 0;
                   tarea['racha'] = 0; // Inicializar racha en 0
                   widget.onTareaAdd(tarea);
                 },

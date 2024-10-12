@@ -13,7 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> tareas = [];
-  DateTime _selectedDay = DateTime.now();
+  DateTime _selectedDay = DateTime.now(); // Mantener el día seleccionado
 
   void _addTarea(Map<String, dynamic> tarea) {
     setState(() {
@@ -21,22 +21,30 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  // Obtener las tareas del día seleccionado (incluye completadas)
   List<Map<String, dynamic>> _getTareasDelDia() {
     return tareas.where((tarea) {
       DateTime fechaInicio = DateTime.parse(tarea['fechaInicio']);
 
-      // Evitar que las tareas completadas se muestren
-      if (tarea['completada'] == true &&
-          !isSameDay(fechaInicio, _selectedDay)) {
-        return false;
+      // Mostrar tarea completada solo en su día correspondiente
+      if (tarea['completada'] == true) {
+        if (tarea['frecuencia'] == 'Diariamente') {
+          return _selectedDay.difference(fechaInicio).inDays % 1 == 0;
+        } else if (tarea['frecuencia'] == 'Semanalmente') {
+          return _selectedDay.difference(fechaInicio).inDays % 7 == 0;
+        } else if (tarea['frecuencia'] == 'Mensualmente') {
+          return _selectedDay.day == fechaInicio.day;
+        } else {
+          return isSameDay(_selectedDay, fechaInicio); // Mostrar solo en su día
+        }
       }
 
-      // Evitar que las tareas se muestren antes de su fecha de inicio
+      // Evitar mostrar las tareas antes de la fecha de inicio
       if (_selectedDay.isBefore(fechaInicio)) {
         return false;
       }
 
-      // Verificar si es una tarea repetitiva y calcular la proxima aparicoin
+      // Mostrar tareas no completadas en su ciclo correspondiente
       if (tarea['frecuencia'] != 'Nunca') {
         if (tarea['frecuencia'] == 'Diariamente') {
           return _selectedDay.difference(fechaInicio).inDays % 1 == 0;
@@ -47,7 +55,8 @@ class _HomePageState extends State<HomePage> {
         }
       }
 
-      return isSameDay(fechaInicio, _selectedDay);
+      return isSameDay(
+          fechaInicio, _selectedDay); // Mostrar si es el día exacto
     }).toList();
   }
 
@@ -56,7 +65,7 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       Map<String, dynamic> tarea = tareas[index];
 
-      // Solo actualizar si la tarea está programada para hoy
+      // Solo marcar la tarea como completada si corresponde al día actual
       if (isSameDay(DateTime.now(), DateTime.parse(tarea['fechaInicio']))) {
         tarea['completada'] = true;
 
@@ -67,7 +76,7 @@ class _HomePageState extends State<HomePage> {
         if (tarea['frecuencia'] != 'Nunca') {
           DateTime nuevaFecha = RachasManager.calcularSiguienteFecha(tarea);
           tarea['fechaInicio'] = nuevaFecha.toIso8601String();
-          tarea['completada'] = false; // Resetear para la proxima aparición
+          tarea['completada'] = false; // Resetear para la próxima repetición
         }
       }
     });
@@ -76,7 +85,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 2, // Número de pestañas
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Mi Mejor Ser"),
@@ -90,7 +99,7 @@ class _HomePageState extends State<HomePage> {
             IconButton(
               icon: const Icon(Icons.account_circle),
               onPressed: () {
-                // implementar perfil de usuario
+                // Implementar perfil de usuario
               },
             ),
           ],
@@ -98,21 +107,21 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           children: [
             _buildCalendar(),
-            TareasPage(tareas: tareas, onTareaAdd: _addTarea),
+            TareasPage(tareas: tareas, onTareaAdd: _addTarea), // Pasar tareas
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          heroTag: 'uniqueFabTag',
+          heroTag: 'uniqueFabTag', // Asegúrate de asignar un tag único
           onPressed: () async {
-            // Navegacion para agregar una nueva tarea
+            // Navegación para agregar una nueva tarea
             await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => TareasAddPage(
                   onSave: (tarea) {
-                    tarea['cantidadProgreso'] = 0;
-                    tarea['racha'] = 0;
-                    _addTarea(tarea);
+                    tarea['cantidadProgreso'] = 0; // Inicializar progreso
+                    tarea['racha'] = 0; // Inicializar racha
+                    _addTarea(tarea); // Agregar la tarea a la lista
                   },
                 ),
               ),
@@ -159,7 +168,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Mostrar tareas del dia seleccionado
   Widget _buildTareasDelDia() {
     final tareasDelDia = _getTareasDelDia();
 
@@ -182,6 +190,14 @@ class _HomePageState extends State<HomePage> {
                 return ListTile(
                   title: Text(tarea['titulo']),
                   subtitle: Text("Racha: ${tarea['racha'] ?? 0} días"),
+                  trailing: tarea['completada']
+                      ? const Icon(Icons.check, color: Colors.green)
+                      : IconButton(
+                          icon: const Icon(Icons.check_circle),
+                          onPressed: () {
+                            _completarTarea(index);
+                          },
+                        ),
                 );
               },
             ),
