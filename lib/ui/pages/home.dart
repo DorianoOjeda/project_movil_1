@@ -12,11 +12,42 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Map<String, dynamic>> tareas = [];
+  DateTime _selectedDay = DateTime.now(); // Mantener el dia seleccionado
 
   void _addTarea(Map<String, dynamic> tarea) {
     setState(() {
       tareas.add(tarea);
     });
+  }
+
+  List<Map<String, dynamic>> _getTareasDelDia() {
+    return tareas.where((tarea) {
+      DateTime fechaInicio = DateTime.parse(tarea['fechaInicio']);
+
+      // Evitar que las tareas completadas se muestren
+      if (tarea['completada'] == true) {
+        return false;
+      }
+
+      // Evitar que las tareas se muestren antes de su fecha de inicio
+      if (_selectedDay.isBefore(fechaInicio)) {
+        return false;
+      }
+
+      // Verificar si es una tarea repetitiva y calcular la proxima aparicoin
+      if (tarea['frecuencia'] != 'Nunca') {
+        if (tarea['frecuencia'] == 'Diariamente') {
+          return _selectedDay.difference(fechaInicio).inDays % 1 == 0;
+        } else if (tarea['frecuencia'] == 'Semanalmente') {
+          return _selectedDay.difference(fechaInicio).inDays % 7 == 0;
+        } else if (tarea['frecuencia'] == 'Mensualmente') {
+          return _selectedDay.day == fechaInicio.day;
+        }
+      }
+
+      // Mostrar solo las tareas no repetitivas si son del dia seleccionado
+      return isSameDay(fechaInicio, _selectedDay);
+    }).toList();
   }
 
   @override
@@ -51,7 +82,7 @@ class _HomePageState extends State<HomePage> {
           heroTag: 'uniqueFabTag',
           onPressed: () async {
             // Navegacion para agregar una nueva tarea
-            final nuevaTarea = await Navigator.push(
+            await Navigator.push(
               context,
               MaterialPageRoute(
                 builder: (context) => TareasAddPage(
@@ -61,13 +92,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             );
-
-            // Verificar si se creo una nueva tarea antes de agregarla a la lista
-            if (nuevaTarea != null) {
-              setState(() {
-                tareas.add(nuevaTarea);
-              });
-            }
           },
           child: const Icon(Icons.add),
         ),
@@ -81,10 +105,16 @@ class _HomePageState extends State<HomePage> {
         TableCalendar(
           firstDay: DateTime.utc(2021, 1, 1),
           lastDay: DateTime.utc(2030, 12, 31),
-          focusedDay: DateTime.now(),
+          focusedDay: _selectedDay,
+          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              _selectedDay = selectedDay;
+            });
+          },
         ),
-        // widget para superrachas
         _buildSuperStreaks(),
+        _buildTareasDelDia(),
       ],
     );
   }
@@ -98,8 +128,39 @@ class _HomePageState extends State<HomePage> {
         children: [
           Text("SuperRachas",
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          Text("5 semanas consecutivas completando todas las tareas",
-              style: TextStyle(fontSize: 16)),
+          Text("5 semanas consecutivas completando todas las tareas"),
+        ],
+      ),
+    );
+  }
+
+  // Mostrar tareas del dia seleccionado
+  Widget _buildTareasDelDia() {
+    final tareasDelDia = _getTareasDelDia();
+
+    return Expanded(
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text(
+              "Tareas del día",
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: tareasDelDia.length,
+              itemBuilder: (context, index) {
+                final tarea = tareasDelDia[index];
+
+                return ListTile(
+                  title: Text(tarea['titulo']),
+                  subtitle: Text("Fecha: ${tarea['fechaInicio']}"),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );

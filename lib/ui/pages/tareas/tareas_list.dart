@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'tareas_add.dart';
+import 'package:intl/intl.dart';
 
 class TareasPage extends StatefulWidget {
   final List<Map<String, dynamic>> tareas;
@@ -27,27 +28,31 @@ class _TareasPageState extends State<TareasPage> {
     // Verificar si la tarea es repetitiva y reprogramarla
     if (tarea['frecuencia'] != 'Nunca') {
       DateTime nuevaFecha = DateTime.parse(tarea['fechaInicio']);
+      DateTime today = DateTime.now();
+
       if (tarea['frecuencia'] == 'Diariamente') {
-        nuevaFecha = nuevaFecha.add(Duration(days: 1));
+        nuevaFecha = today.add(Duration(days: 1));
       } else if (tarea['frecuencia'] == 'Semanalmente') {
-        nuevaFecha = nuevaFecha.add(Duration(days: 7));
+        nuevaFecha = today.add(Duration(
+            days: 7 - today.weekday)); // Proximo mismo dia de la semana
       } else if (tarea['frecuencia'] == 'Mensualmente') {
-        nuevaFecha =
-            DateTime(nuevaFecha.year, nuevaFecha.month + 1, nuevaFecha.day);
+        nuevaFecha = DateTime(
+            today.year, today.month + 1, nuevaFecha.day); // Proximo mes
       }
 
-      final nuevaTarea = {
-        'titulo': tarea['titulo'],
-        'descripcion': tarea['descripcion'],
-        'tipo': tarea['tipo'],
-        'cantidad': tarea['cantidad'],
-        'cantidadProgreso': tarea['cantidadProgreso'],
-        'frecuencia': tarea['frecuencia'],
-        'fechaInicio': nuevaFecha.toIso8601String(),
-        'completada': false,
-      };
-
-      widget.onTareaAdd(nuevaTarea);
+      // Actualizar la tarea con la nueva fecha
+      setState(() {
+        widget.onTareaAdd({
+          'titulo': tarea['titulo'],
+          'descripcion': tarea['descripcion'],
+          'tipo': tarea['tipo'],
+          'cantidad': tarea['cantidad'],
+          'cantidadProgreso': tarea['cantidadProgreso'],
+          'frecuencia': tarea['frecuencia'],
+          'fechaInicio': nuevaFecha.toIso8601String(),
+          'completada': false,
+        });
+      });
     }
   }
 
@@ -77,6 +82,26 @@ class _TareasPageState extends State<TareasPage> {
     }
   }
 
+  String _getFechaSiguiente(DateTime fechaInicio, String frecuencia) {
+    DateTime today = DateTime.now();
+    DateTime proximaFecha;
+
+    if (frecuencia == 'Diariamente') {
+      proximaFecha = today.add(Duration(days: 1));
+      return "Mañana";
+    } else if (frecuencia == 'Semanalmente') {
+      proximaFecha =
+          today.add(Duration(days: 7 - today.weekday)); // Proxima semana
+      return DateFormat('yyyy-MM-dd').format(proximaFecha);
+    } else if (frecuencia == 'Mensualmente') {
+      proximaFecha =
+          DateTime(today.year, today.month + 1, fechaInicio.day); // Proximo mes
+      return DateFormat('yyyy-MM-dd').format(proximaFecha);
+    } else {
+      return DateFormat('yyyy-MM-dd').format(fechaInicio);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -87,6 +112,9 @@ class _TareasPageState extends State<TareasPage> {
         itemCount: widget.tareas.length,
         itemBuilder: (context, index) {
           final tarea = widget.tareas[index];
+          DateTime fechaInicio = DateTime.parse(tarea['fechaInicio']);
+          String fechaSiguiente =
+              _getFechaSiguiente(fechaInicio, tarea['frecuencia']);
 
           if (tarea['tipo'] == 'cuantificable') {
             final int cantidadMaxima = tarea['cantidad'] ?? 1;
@@ -102,6 +130,7 @@ class _TareasPageState extends State<TareasPage> {
                       tarea['descripcion'].isNotEmpty)
                     Text(tarea['descripcion']), // Mostrar descripcion si existe
                   Text("Progreso: $progresoActual / $cantidadMaxima"),
+                  Text("Fecha siguiente: $fechaSiguiente"),
                   LinearProgressIndicator(
                     value: cantidadMaxima > 0
                         ? progresoActual / cantidadMaxima
@@ -139,9 +168,8 @@ class _TareasPageState extends State<TareasPage> {
                   if (tarea['descripcion'] != null &&
                       tarea['descripcion'].isNotEmpty)
                     Text(tarea['descripcion']), // Mostrar descripción si existe
-                  tarea['completada']
-                      ? Text("Completada")
-                      : Text("Fecha de inicio: ${tarea['fechaInicio']}"),
+                  Text("Repetir: ${tarea['frecuencia']}"),
+                  Text("Fecha siguiente: $fechaSiguiente"),
                 ],
               ),
               trailing: tarea['completada']
