@@ -46,3 +46,14 @@ Calendar getCalendarPage() {
 Profile getProfilePage() {
   return const Profile();
 }
+
+bool isRachaActive() {
+  // This function will be used to check if the user has an active racha, will change when implemented
+  return false;
+}
+
+String getRachaImagePath() {
+  return isRachaActive()
+      ? "assets/images/racha_activa.png"
+      : "assets/images/racha_desactiva.png";
+}
