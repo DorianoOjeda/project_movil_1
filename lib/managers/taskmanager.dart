@@ -98,11 +98,15 @@ class TaskManager {
 
   Map<String, dynamic> incrementarCantidadProgreso(
       Map<String, dynamic> tarea, int cantidad) {
-    tarea['cantidadProgreso'] = tarea['cantidadProgreso'] + cantidad;
-    if (tarea['cantidadProgreso'] >= tarea['cantidad']) {
-      tarea['cantidadProgreso'] = tarea['cantidad'];
-      tarea = marcarTareaComoCompletada(tarea);
+    if (tarea['completada']) {
+      return tarea;
     }
+    if (tarea['cantidadProgreso'] < tarea['cantidad']) {
+      tarea['cantidadProgreso'] = tarea['cantidadProgreso'] + cantidad;
+      return tarea;
+    }
+    tarea['cantidadProgreso'] = tarea['cantidad'];
+    tarea = marcarTareaComoCompletada(tarea);
     return tarea;
   }
 
