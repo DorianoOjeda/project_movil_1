@@ -5,6 +5,8 @@ import 'package:project_1/ui/pages/home.dart';
 import 'package:project_1/ui/pages/calendar.dart';
 import 'package:project_1/ui/pages/profile/profile.dart';
 import 'package:project_1/ui/components/profilemenu_widget.dart';
+import 'package:project_1/ui/pages/tareas/components/task_bool.dart';
+import 'package:project_1/ui/pages/tareas/components/task_qkt.dart';
 import 'package:project_1/ui/pages/tareas/tareas_add.dart';
 import 'package:flutter/material.dart';
 import 'package:project_1/ui/pages/tareas/tareas_list.dart';
@@ -27,8 +29,21 @@ NavigationButton getNavigationButton(String text, String route) {
   return NavigationButton(text, route);
 }
 
-CalendarWidget getCalendarWidget() {
-  return const CalendarWidget();
+CalendarWidget getCalendarWidget(
+    final ValueNotifier<DateTime?> selectedDayNotifier) {
+  return CalendarWidget(selectedDayNotifier: selectedDayNotifier);
+}
+
+TaskQkt getTaskQkt(Map<String, dynamic> task) {
+  return TaskQkt(
+    tarea: task,
+  );
+}
+
+TaskBool getTaskBool(Map<String, dynamic> task) {
+  return TaskBool(
+    tarea: task,
+  );
 }
 
 ProfileMenuWidget getProfileMenuWidget(
@@ -65,22 +80,20 @@ TareasAddPage getTareasAddPage() {
   return const TareasAddPage();
 }
 
-bool isRachaActive() {
-  // This function will be used to check if the user has an active racha, will change when implemented
+bool isRachaActive(int? racha) {
+  if (racha != null) {
+    racha > 0 ? true : false;
+  }
+  // this part should be for the super racha
   return false;
 }
 
-SizedBox getRachaImage() {
-  double width;
-  double height;
+SizedBox getRachaImage(int racha, double width, double height,
+    {bool completada = false}) {
   String imageurl;
-  if (isRachaActive()) {
-    width = 120;
-    height = 120;
+  if (isRachaActive(racha) || completada) {
     imageurl = "assets/images/racha_activa.png";
   } else {
-    width = 100;
-    height = 100;
     imageurl = "assets/images/racha_desactiva.png";
   }
   return SizedBox(
@@ -92,7 +105,7 @@ SizedBox getRachaImage() {
   );
 }
 
-String getSuperRachaNumber() {
+int getSuperRachaNumber() {
   // This function will be used to get the number of the super racha, will change when implemented
-  return "0";
+  return 0;
 }

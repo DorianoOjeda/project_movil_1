@@ -135,12 +135,10 @@ class _TareasAddPageState extends State<TareasAddPage> {
                   fechaInicio: DateFormat('yyyy-MM-dd').format(_fechaInicio),
                   fechaSiguiente: null,
                   completada: false,
+                  racha: 0,
                 );
                 nuevaTarea = TaskManager.instance.setFechaSiguiente(nuevaTarea);
                 TaskManager.instance.addToList(nuevaTarea);
-                print(nuevaTarea);
-                print("Tareas: ");
-                print(TaskManager.instance.getTareas());
                 Navigator.pop(context);
               },
               child: const Text("Guardar Tarea"),

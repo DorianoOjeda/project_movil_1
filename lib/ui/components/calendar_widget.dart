@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class CalendarWidget extends StatefulWidget {
-  const CalendarWidget({super.key});
+  final ValueNotifier<DateTime?> selectedDayNotifier;
+  const CalendarWidget({
+    super.key,
+    required this.selectedDayNotifier,
+  });
+
   @override
   State<CalendarWidget> createState() => _CalendarWidgetState();
 }
@@ -10,7 +15,6 @@ class CalendarWidget extends StatefulWidget {
 class _CalendarWidgetState extends State<CalendarWidget> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-  DateTime? _selectedDay;
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +22,8 @@ class _CalendarWidgetState extends State<CalendarWidget> {
       decoration: BoxDecoration(
         color: const Color.fromARGB(255, 210, 185, 255),
         border: Border.all(
-          color: Colors.black, // Color del borde
-          width: 1.5, // Grosor del borde
+          color: Colors.black,
+          width: 1.5,
         ),
       ),
       padding: const EdgeInsets.only(
@@ -29,14 +33,13 @@ class _CalendarWidgetState extends State<CalendarWidget> {
         lastDay: DateTime.utc(2030, 12, 31),
         focusedDay: _focusedDay,
         calendarFormat: _calendarFormat,
-        //function
         selectedDayPredicate: (day) {
-          return isSameDay(_selectedDay, day);
+          return isSameDay(widget.selectedDayNotifier.value, day);
         },
         onDaySelected: (selectedDay, focusedDay) {
-          if (!isSameDay(_selectedDay, selectedDay)) {
+          if (!isSameDay(widget.selectedDayNotifier.value, selectedDay)) {
             setState(() {
-              _selectedDay = selectedDay;
+              widget.selectedDayNotifier.value = selectedDay;
               _focusedDay = focusedDay;
             });
           }
