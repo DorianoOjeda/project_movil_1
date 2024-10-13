@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project_1/handler.dart';
-import 'tareas/tareas_list.dart';
-import 'tareas/tareas_add.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'tareas/rachas.dart';
+import 'package:project_1/managers/handler.dart';
+import 'package:project_1/managers/taskmanager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,76 +9,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<Map<String, dynamic>> tareas = [];
-  DateTime _selectedDay = DateTime.now(); // Mantener el día seleccionado
-
-  void _addTarea(Map<String, dynamic> tarea) {
-    setState(() {
-      tareas.add(tarea);
-    });
-  }
-
-  // Obtener las tareas del día seleccionado (incluye completadas)
-  List<Map<String, dynamic>> _getTareasDelDia() {
-    return tareas.where((tarea) {
-      DateTime fechaInicio = DateTime.parse(tarea['fechaInicio']);
-
-      // Mostrar tarea completada solo en su día correspondiente
-      if (tarea['completada'] == true) {
-        if (tarea['frecuencia'] == 'Diariamente') {
-          return _selectedDay.difference(fechaInicio).inDays % 1 == 0;
-        } else if (tarea['frecuencia'] == 'Semanalmente') {
-          return _selectedDay.difference(fechaInicio).inDays % 7 == 0;
-        } else if (tarea['frecuencia'] == 'Mensualmente') {
-          return _selectedDay.day == fechaInicio.day;
-        } else {
-          return isSameDay(_selectedDay, fechaInicio); // Mostrar solo en su día
-        }
-      }
-
-      // Evitar mostrar las tareas antes de la fecha de inicio
-      if (_selectedDay.isBefore(fechaInicio)) {
-        return false;
-      }
-
-      // Mostrar tareas no completadas en su ciclo correspondiente
-      if (tarea['frecuencia'] != 'Nunca') {
-        if (tarea['frecuencia'] == 'Diariamente') {
-          return _selectedDay.difference(fechaInicio).inDays % 1 == 0;
-        } else if (tarea['frecuencia'] == 'Semanalmente') {
-          return _selectedDay.difference(fechaInicio).inDays % 7 == 0;
-        } else if (tarea['frecuencia'] == 'Mensualmente') {
-          return _selectedDay.day == fechaInicio.day;
-        }
-      }
-
-      return isSameDay(
-          fechaInicio, _selectedDay); // Mostrar si es el día exacto
-    }).toList();
-  }
-
-  // Completar la tarea
-  void _completarTarea(int index) {
-    setState(() {
-      Map<String, dynamic> tarea = tareas[index];
-
-      // Solo marcar la tarea como completada si corresponde al día actual
-      if (isSameDay(DateTime.now(), DateTime.parse(tarea['fechaInicio']))) {
-        tarea['completada'] = true;
-
-        // Actualizar la racha al completarse
-        RachasManager.actualizarRacha(tarea, true);
-
-        // Reprogramar la tarea si es repetitiva
-        if (tarea['frecuencia'] != 'Nunca') {
-          DateTime nuevaFecha = RachasManager.calcularSiguienteFecha(tarea);
-          tarea['fechaInicio'] = nuevaFecha.toIso8601String();
-          tarea['completada'] = false; // Resetear para la próxima repetición
-        }
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -105,21 +32,16 @@ class _HomePageState extends State<HomePage> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
+              //image Racha
               Padding(
                 padding: const EdgeInsets.only(top: 20.0, left: 80.0),
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: ClipRRect(
-                        child: Image(image: AssetImage(getRachaImagePath())),
-                      ),
-                    ),
-                    const Text(
-                      "0",
-                      style: TextStyle(
-                          fontSize: 40,
+                    getRachaImage(),
+                    Text(
+                      getSuperRachaNumber(),
+                      style: const TextStyle(
+                          fontSize: 38,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
@@ -127,17 +49,37 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text("¿Qué deseas hacer hoy?",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-              const SizedBox(height: 20),
-              const Text("Implementar [agregar tareas]",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text("Tareas del día",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+              ),
+              Expanded(
+                  child: Container(
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 235, 235, 235),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child:
+                    getTareasListPage(TaskManager.instance.getTareasDelDia()),
+              )),
+              const SizedBox(height: 10),
+              FloatingActionButton(
+                heroTag: 'uniqueFabTag', // Asegúrate de asignar un tag único
+                onPressed: () async {
+                  {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => getTareasAddPage()),
+                    );
+                  }
+                },
+                child: const Icon(Icons.add),
+              ),
             ],
           ),
         ));

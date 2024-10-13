@@ -1,13 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:project_1/managers/taskmanager.dart';
 
 class TareasAddPage extends StatefulWidget {
-  final Function(Map<String, dynamic>) onSave;
-
-  const TareasAddPage({required this.onSave, Key? key}) : super(key: key);
-
+  const TareasAddPage({super.key});
   @override
-  _TareasAddPageState createState() => _TareasAddPageState();
+  State<TareasAddPage> createState() => _TareasAddPageState();
 }
 
 class _TareasAddPageState extends State<TareasAddPage> {
@@ -44,8 +42,6 @@ class _TareasAddPageState extends State<TareasAddPage> {
               ),
             ),
             const SizedBox(height: 20),
-
-            // Tipo de tarea
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -70,8 +66,6 @@ class _TareasAddPageState extends State<TareasAddPage> {
               ],
             ),
             const SizedBox(height: 20),
-
-            // Repeticion de la tarea
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -99,7 +93,6 @@ class _TareasAddPageState extends State<TareasAddPage> {
               ],
             ),
             const SizedBox(height: 20),
-
             // Campo para la cantidad
             if (!_esBooleana)
               TextField(
@@ -110,7 +103,6 @@ class _TareasAddPageState extends State<TareasAddPage> {
                 ),
               ),
             const SizedBox(height: 20),
-
             // Selector de fecha
             Row(
               children: [
@@ -122,30 +114,33 @@ class _TareasAddPageState extends State<TareasAddPage> {
               ],
             ),
             const SizedBox(height: 20),
-
-            // Guardar la tarea
             ElevatedButton(
               onPressed: () {
                 if (_tituloController.text.isEmpty) return;
-
-                // Crear nueva tarea
-                final nuevaTarea = {
-                  'titulo': _tituloController.text,
-                  'descripcion': _descripcionController.text,
-                  'tipo': _esBooleana ? 'booleano' : 'cuantificable',
-                  'cantidad': _esBooleana
+                Map<String, dynamic> nuevaTarea =
+                    TaskManager.instance.createNewTarea(
+                  titulo: _tituloController.text,
+                  descripcion: _descripcionController.text.isEmpty
+                      ? ''
+                      : _descripcionController.text,
+                  tipo: _esBooleana ? 'booleano' : 'cuantificable',
+                  cantidad: _esBooleana
                       ? null
                       : int.tryParse(_cantidadController.text) ??
                           1, // Cantidad minima 1 para cuantificable
-                  'cantidadProgreso': _esBooleana
+                  cantidadProgreso: _esBooleana
                       ? null
                       : 0, // Progreso inicial en 0 para cuantificables
-                  'frecuencia': _frecuenciaRepeticion,
-                  'fechaInicio': DateFormat('yyyy-MM-dd').format(_fechaInicio),
-                  'completada': false,
-                };
-
-                widget.onSave(nuevaTarea);
+                  frecuencia: _frecuenciaRepeticion,
+                  fechaInicio: DateFormat('yyyy-MM-dd').format(_fechaInicio),
+                  fechaSiguiente: null,
+                  completada: false,
+                );
+                nuevaTarea = TaskManager.instance.setFechaSiguiente(nuevaTarea);
+                TaskManager.instance.addToList(nuevaTarea);
+                print(nuevaTarea);
+                print("Tareas: ");
+                print(TaskManager.instance.getTareas());
                 Navigator.pop(context);
               },
               child: const Text("Guardar Tarea"),
@@ -163,7 +158,6 @@ class _TareasAddPageState extends State<TareasAddPage> {
       firstDate: DateTime(2020),
       lastDate: DateTime(2030),
     );
-
     if (picked != null && picked != _fechaInicio) {
       setState(() {
         _fechaInicio = picked;
