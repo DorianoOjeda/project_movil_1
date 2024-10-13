@@ -16,11 +16,10 @@ class TaskManager {
     listOfTask.add(tarea);
   }
 
-  List<Map<String, dynamic>> getTareasDelDia() {
-    DateTime today = DateTime.now();
+  List<Map<String, dynamic>> getTareasDelDia(DateTime fecha) {
     return listOfTask.where((tarea) {
-      return isSameDay(DateTime.parse(tarea['fechaInicio']), today) ||
-          isSameDay(DateTime.parse(tarea['fechaSiguiente']), today);
+      return (isSameDay(DateTime.parse(tarea['fechaInicio']), fecha) ||
+          isSameDay(DateTime.parse(tarea['fechaSiguiente']), fecha));
     }).toList();
   }
 
@@ -33,7 +32,8 @@ class TaskManager {
       required String frecuencia,
       required String fechaInicio,
       required String? fechaSiguiente,
-      required bool completada}) {
+      required bool completada,
+      required int racha}) {
     return {
       'titulo': titulo,
       'descripcion': descripcion,
@@ -44,6 +44,7 @@ class TaskManager {
       'fechaInicio': fechaInicio,
       'fechaSiguiente': fechaSiguiente,
       'completada': completada,
+      'racha': racha,
     };
   }
 
@@ -98,11 +99,17 @@ class TaskManager {
 
   Map<String, dynamic> incrementarCantidadProgreso(
       Map<String, dynamic> tarea, int cantidad) {
-    tarea['cantidadProgreso'] = tarea['cantidadProgreso'] + cantidad;
-    if (tarea['cantidadProgreso'] >= tarea['cantidad']) {
-      tarea['cantidadProgreso'] = tarea['cantidad'];
-      tarea = marcarTareaComoCompletada(tarea);
+    if (tarea['completada']) {
+      return tarea;
     }
+    if (tarea['cantidadProgreso'] < tarea['cantidad']) {
+      tarea['cantidadProgreso'] = tarea['cantidadProgreso'] + cantidad;
+      if (tarea['cantidadProgreso'] == tarea['cantidad']) {
+        tarea = marcarTareaComoCompletada(tarea);
+      }
+      return tarea;
+    }
+    tarea['cantidadProgreso'] = tarea['cantidad'];
     return tarea;
   }
 
