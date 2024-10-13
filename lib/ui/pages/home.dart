@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project_1/handler.dart';
+import 'package:project_1/managers/handler.dart';
+import 'package:project_1/managers/taskmanager.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,21 +32,16 @@ class _HomePageState extends State<HomePage> {
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white)),
+              //image Racha
               Padding(
                 padding: const EdgeInsets.only(top: 20.0, left: 80.0),
                 child: Row(
                   children: [
-                    SizedBox(
-                      width: 120,
-                      height: 120,
-                      child: ClipRRect(
-                        child: Image(image: AssetImage(getRachaImagePath())),
-                      ),
-                    ),
-                    const Text(
-                      "0",
-                      style: TextStyle(
-                          fontSize: 40,
+                    getRachaImage(),
+                    Text(
+                      getSuperRachaNumber(),
+                      style: const TextStyle(
+                          fontSize: 38,
                           fontWeight: FontWeight.bold,
                           color: Colors.white),
                     ),
@@ -53,19 +49,45 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
               const SizedBox(height: 20),
-              const Text("¿Qué deseas hacer hoy?",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-              const SizedBox(height: 20),
-              const Text("Implementar [agregar tareas]",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text("Tareas del día",
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+              ),
+              Expanded(
+                  child: Container(
+                decoration: const BoxDecoration(
+                  color: Color.fromARGB(255, 235, 235, 235),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child:
+                    getTareasListPage(TaskManager.instance.getTareasDelDia()),
+              )),
+              const SizedBox(height: 10),
+              FloatingActionButton(
+                heroTag: 'uniqueFabTag', // Asegúrate de asignar un tag único
+                onPressed: () async {
+                  {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => getTareasAddPage()),
+                    );
+                  }
+                },
+                child: const Icon(Icons.add),
+              ),
             ],
           ),
         ));
+  }
+
+  bool isSameDay(DateTime date1, DateTime date2) {
+    return date1.year == date2.year &&
+        date1.month == date2.month &&
+        date1.day == date2.day;
   }
 }

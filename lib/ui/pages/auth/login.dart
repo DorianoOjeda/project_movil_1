@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:project_1/handler.dart';
+import 'package:project_1/managers/handler.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -120,13 +120,14 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(color: Colors.white, fontSize: 22),
                         ),
                         onPressed: () {
+                          Navigator.pushNamed(context, '/navigation');
                           //add auth method for Project 2
-                          if (_formkey.currentState!.validate()) {
-                            Navigator.pushNamed(
-                              context,
-                              '/home',
-                            );
-                          }
+                          // if (_formkey.currentState!.validate()) {
+                          //   Navigator.pushNamed(
+                          //     context,
+                          //     '/navigation',
+                          //   );
+                          // }
                         },
                       ),
                     ),

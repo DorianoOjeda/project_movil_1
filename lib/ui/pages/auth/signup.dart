@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:form_field_validator/form_field_validator.dart';
-import 'package:project_1/handler.dart';
+import 'package:project_1/managers/handler.dart';
 
 class SignupPage extends StatefulWidget {
   const SignupPage({super.key});
