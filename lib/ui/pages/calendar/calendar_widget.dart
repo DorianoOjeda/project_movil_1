@@ -19,12 +19,14 @@ class _CalendarWidgetState extends State<CalendarWidget> {
   @override
   Widget build(BuildContext context) {
     return Container(
+      margin: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 210, 185, 255),
+        color: const Color.fromARGB(255, 240, 240, 240),
         border: Border.all(
           color: Colors.black,
           width: 1.5,
         ),
+        borderRadius: BorderRadius.circular(20.0),
       ),
       padding: const EdgeInsets.only(
           top: 10.0, bottom: 20.0, left: 10.0, right: 10.0),

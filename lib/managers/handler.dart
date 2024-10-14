@@ -1,7 +1,7 @@
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
 import 'package:project_1/ui/pages/calendar/calendar_widget.dart';
-import 'package:project_1/ui/pages/home.dart';
+import 'package:project_1/ui/pages/home/home.dart';
 import 'package:project_1/ui/pages/calendar/calendar.dart';
 import 'package:project_1/ui/pages/profile/profile.dart';
 import 'package:project_1/ui/pages/profile/profilemenu_widget.dart';
