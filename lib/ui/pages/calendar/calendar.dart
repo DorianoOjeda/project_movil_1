@@ -14,24 +14,32 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        padding: const EdgeInsets.only(top: 60.0, bottom: 30.0),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color.fromARGB(255, 95, 50, 150),
+              Color.fromARGB(255, 54, 29, 163)
+            ], // Fondo degradado
+          ),
+        ),
+        padding: const EdgeInsets.only(top: 60.0),
         child: Column(
           children: <Widget>[
             getCalendarWidget(_selectedDayNotifier),
-            const SizedBox(height: 20),
             ValueListenableBuilder<DateTime?>(
               valueListenable: _selectedDayNotifier,
               builder: (context, selectedDay, child) {
                 final selectedDate = selectedDay ?? DateTime.now();
-                print('Tareas del día: $selectedDate');
-                print(TaskManager.instance.getTareasDelDia(selectedDate));
                 return Expanded(
                   child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    padding: const EdgeInsets.all(8.0),
+                    padding:
+                        const EdgeInsets.only(left: 5, right: 5, bottom: 20),
+                    decoration: const BoxDecoration(
+                        color: Colors.white,
+                        borderRadius:
+                            BorderRadius.vertical(top: Radius.circular(20))),
                     // Mostramos las tareas correspondientes a la fecha seleccionada
                     child: getTareasListPage(
                         TaskManager.instance.getTareasDelDia(selectedDate)),

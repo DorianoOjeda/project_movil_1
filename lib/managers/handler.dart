@@ -1,10 +1,10 @@
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
-import 'package:project_1/ui/components/calendar_widget.dart';
-import 'package:project_1/ui/pages/home.dart';
-import 'package:project_1/ui/pages/calendar.dart';
+import 'package:project_1/ui/pages/calendar/calendar_widget.dart';
+import 'package:project_1/ui/pages/home/home.dart';
+import 'package:project_1/ui/pages/calendar/calendar.dart';
 import 'package:project_1/ui/pages/profile/profile.dart';
-import 'package:project_1/ui/components/profilemenu_widget.dart';
+import 'package:project_1/ui/pages/profile/profilemenu_widget.dart';
 import 'package:project_1/ui/pages/tareas/components/task_bool.dart';
 import 'package:project_1/ui/pages/tareas/components/task_qkt.dart';
 import 'package:project_1/ui/pages/tareas/tareas_add.dart';
@@ -21,7 +21,8 @@ Logo getLogo(double height, double width) {
 Text prederminedText(String text, double fontSize) {
   return Text(
     text,
-    style: TextStyle(fontSize: fontSize, color: Colors.black),
+    style: TextStyle(
+        fontSize: fontSize, color: const Color.fromARGB(255, 244, 244, 244)),
   );
 }
 
@@ -68,8 +69,8 @@ Calendar getCalendarPage() {
   return const Calendar();
 }
 
-Profile getProfilePage() {
-  return const Profile();
+ProfilePage getProfilePage() {
+  return const ProfilePage();
 }
 
 TareasPage getTareasListPage(List<Map<String, dynamic>> tareas) {
