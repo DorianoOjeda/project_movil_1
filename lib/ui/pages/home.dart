@@ -9,84 +9,159 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  bool showTasks = false;
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color.fromARGB(255, 95, 50, 150),
-            Color.fromARGB(255, 54, 29, 163)
-          ], // Fondo degradado
-        ),
-      ),
-      padding: const EdgeInsets.only(
-          top: 100.0, bottom: 30.0, left: 30.0, right: 30.0),
-      child: Center(
-        child: Column(
-          children: [
-            const Text("Hola [username]!",
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
-            //image Racha
-            Padding(
-              padding: const EdgeInsets.only(top: 20.0, left: 80.0),
-              child: Row(
-                children: [
-                  getRachaImage(getSuperRachaNumber(), 100, 100),
-                  Text(
-                    getSuperRachaNumber().toString(),
-                    style: const TextStyle(
-                        fontSize: 38,
+    List<Map<String, dynamic>> tareas =
+        TaskManager.instance.getTareasDelDia(DateTime.now());
+    return Scaffold(
+      body: Stack(
+        children: [
+          AnimatedPositioned(
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeInOut,
+            top: showTasks ? -50 : 0,
+            bottom: showTasks ? MediaQuery.of(context).size.height * 0.5 : 0,
+            left: 0,
+            right: 0,
+            child: Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color.fromARGB(255, 95, 50, 150),
+                    Color.fromARGB(255, 54, 29, 163),
+                  ],
+                ),
+              ),
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Text(
+                      "Hola [username]!",
+                      style: TextStyle(
+                        fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.white),
-                  ),
-                ],
+                        color: Colors.white,
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        getRachaImage(getSuperRachaNumber(), 100, 100),
+                        const SizedBox(width: 10),
+                        Text(
+                          getSuperRachaNumber().toString(),
+                          style: const TextStyle(
+                            fontSize: 38,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 30),
+                    const Text(
+                      "¿Qué harás hoy?",
+                      style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 20),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Text("Tareas del día",
-                  style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
-            ),
-            Expanded(
+          ),
+          if (showTasks)
+            Positioned(
+              top: MediaQuery.of(context).size.height * 0.35,
+              left: 0,
+              right: 0,
+              bottom: 0,
               child: Container(
+                margin: const EdgeInsets.only(bottom: 110),
                 decoration: const BoxDecoration(
                   color: Color.fromARGB(255, 235, 235, 235),
-                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-                // Llama a getTareasListPage con la lista actualizada
-                child: getTareasListPage(
-                  TaskManager.instance.getTareasDelDia(DateTime.now()),
-                ),
+                child: tareas.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "No tienes tareas para hoy",
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      )
+                    : getTareasListPage(tareas),
               ),
             ),
-            const SizedBox(height: 10),
-            FloatingActionButton(
-              heroTag: 'uniqueFabTag', // Asegúrate de asignar un tag único
-              onPressed: () async {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => getTareasAddPage(),
+          Positioned(
+            bottom: 20,
+            right: 20,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Agregar tarea",
+                  style: TextStyle(
+                    color: showTasks ? Colors.black : Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                ).then((_) {
-                  // Refresca todo el state al regresar para actualizar la lista
-                  setState(() {});
-                });
-              },
-              child: const Icon(Icons.add),
+                ),
+                const SizedBox(height: 5),
+                FloatingActionButton(
+                  heroTag: 'uniqueFabTag',
+                  onPressed: () async {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => getTareasAddPage(),
+                      ),
+                    ).then((_) {
+                      setState(() {});
+                    });
+                  },
+                  child: const Icon(Icons.add),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+          Positioned(
+            bottom: 20,
+            left: 20,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Ver tareas de hoy",
+                  style: TextStyle(
+                    color: showTasks ? Colors.black : Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                FloatingActionButton(
+                  onPressed: () {
+                    setState(() {
+                      showTasks = !showTasks;
+                    });
+                  },
+                  child: Icon(
+                    showTasks ? Icons.arrow_downward : Icons.arrow_upward,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
