@@ -14,96 +14,98 @@ class _TaskQktState extends State<TaskQkt> {
   Widget build(BuildContext context) {
     Map<String, dynamic> tarea = widget.tarea;
     final int cantidadMaxima = tarea['cantidad'];
+
     return Container(
-      decoration: BoxDecoration(
-        color: const Color.fromARGB(255, 255, 251, 238),
-        border: Border.all(color: const Color.fromARGB(255, 0, 0, 0)),
+      margin: const EdgeInsets.only(right: 5, left: 5),
+      padding: const EdgeInsets.only(top: 15, bottom: 15, left: 25, right: 25),
+      decoration: const BoxDecoration(
+        color: Color.fromARGB(255, 73, 68, 102),
+        borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Expanded(
-                child: ListTile(
-                  leading: getRachaImage(tarea['racha'], 60, 60,
-                      completada: tarea['completada']),
-                  title: prederminedText(tarea['titulo'], 16),
-                  subtitle: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (tarea['frecuencia'] != "Nunca")
-                        prederminedText("${tarea['frecuencia']}", 12),
-                      const SizedBox(height: 5),
-                      Center(
-                        child: Column(
-                          children: [
-                            LinearProgressIndicator(
-                              minHeight: 10,
-                              value: cantidadMaxima > 0
-                                  ? tarea['cantidadProgreso'] / cantidadMaxima
-                                  : 0,
-                            ),
-                            prederminedText(
-                                "${tarea['cantidadProgreso']} / ${tarea['cantidad']}",
-                                13),
-                          ],
-                        ),
-                      ),
-                      if (!tarea['completada'])
-                        Center(
-                          child: Container(
-                            margin: const EdgeInsets.only(top: 10),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: Colors.grey),
-                              borderRadius: BorderRadius.circular(5),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove, size: 20),
-                                  onPressed: () {
-                                    setState(() {
-                                      tarea = TaskManager.instance
-                                          .decrementarCantidadProgreso(
-                                              tarea, 1);
-                                    });
-                                  },
-                                ),
-                                Container(
-                                  decoration: BoxDecoration(
-                                    color: Colors.grey[200],
-                                  ),
-                                  width: 40,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                      tarea['cantidadProgreso'].toString()),
-                                ),
-                                IconButton(
-                                  icon: const Icon(Icons.add, size: 20),
-                                  onPressed: () {
-                                    setState(() {
-                                      tarea = TaskManager.instance
-                                          .incrementarCantidadProgreso(
-                                              tarea, 1);
-                                    });
-                                  },
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                    ],
+                child: Text(
+                  tarea['titulo'],
+                  maxLines: 1,
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 255, 255, 255),
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
+              if (!tarea['completada'])
+                Padding(
+                  padding: const EdgeInsets.only(left: 10),
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 5),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.white),
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.remove,
+                              size: 17, color: Colors.white),
+                          onPressed: () {
+                            setState(() {
+                              tarea = TaskManager.instance
+                                  .decrementarCantidadProgreso(tarea, 1);
+                            });
+                          },
+                        ),
+                        Container(
+                          height: 20,
+                          width: 1,
+                          color: Colors.white,
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.add,
+                              size: 17, color: Colors.white),
+                          onPressed: () {
+                            setState(() {
+                              tarea = TaskManager.instance
+                                  .incrementarCantidadProgreso(tarea, 1);
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
               if (tarea['completada'])
                 const Padding(
-                  padding: EdgeInsets.only(right: 15.0),
-                  child: Icon(Icons.check, color: Colors.green),
+                  padding: EdgeInsets.only(left: 15),
+                  child: Icon(Icons.check_circle_sharp, color: Colors.green),
                 ),
             ],
+          ),
+          const SizedBox(height: 10),
+          if (tarea['frecuencia'] != "Nunca")
+            prederminedText("${tarea['frecuencia']}", 12),
+          const SizedBox(height: 5),
+          Center(
+            child: Column(
+              children: [
+                LinearProgressIndicator(
+                  minHeight: 10,
+                  value: cantidadMaxima > 0
+                      ? tarea['cantidadProgreso'] / cantidadMaxima
+                      : 0,
+                ),
+                prederminedText(
+                  "${tarea['cantidadProgreso']} / ${tarea['cantidad']}",
+                  13,
+                ),
+              ],
+            ),
           ),
         ],
       ),
