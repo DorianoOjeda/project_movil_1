@@ -1,16 +1,24 @@
-# project_1
+# Mi mejor version
 
-A new Flutter project.
+<h4 align="center">
+:construction: Proyecto en construcción :construction:
+</h4>
+
+Conoce la nueva aplicacion que te ayudara a tener tu vida organizada y llena de energia.
+En esta app podras agregar tareas, establecer repeticiones de la mismas y tener un calendario donde podras visualizar la liusta de tarea por dia!
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+This project is made with Flutter!
 
-A few resources to get you started if this is your first Flutter project:
+## 📁 Antes de ejecutarlo...
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Debes tener flutter correctamentre instalado en tu computador y clonas el repositprio en la carpeta que desees.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## 🛠️ Abre y ejecuta el proyecto
+
+Abre el programa en visual studio code, alli encontraras una carpeta llamada lib, en ella debes irte al archivo main.dart y ejectuarlo
+
+
+## Demo
+[Watch the video](https://drive.google.com/file/d/1sUf8Qql7Hg9fD0bdY8tdkl1ddjDd4-_K/view?usp=sharing)
