@@ -26,9 +26,22 @@ class TaskManager {
   }
 
   List<Map<String, dynamic>> getTareasDelDia(DateTime fecha) {
+    print(listOfTask);
     return listOfTask.where((tarea) {
-      return (isSameDay(DateTime.parse(tarea['fechaInicio']), fecha) ||
-          isSameDay(DateTime.parse(tarea['fechaSiguiente']), fecha));
+      bool esDiaValido =
+          isSameDay(DateTime.parse(tarea['fechaInicio']), fecha) ||
+              isSameDay(DateTime.parse(tarea['fechaSiguiente']), fecha);
+
+      // Si coincide con la fecha siguiente y la frecuencia no es null, marca la tarea como no completada
+      if (isSameDay(DateTime.parse(tarea['fechaSiguiente']), fecha) &&
+          tarea['frecuencia'] != 'Nunca') {
+        tarea['completada'] = false;
+        if (tarea['cantidadProgreso'] == tarea['cantidad']) {
+          tarea['cantidadProgreso'] = 0;
+        }
+      }
+
+      return esDiaValido;
     }).toList();
   }
 
@@ -58,8 +71,15 @@ class TaskManager {
   }
 
   Map<String, dynamic> setFechaSiguiente(Map<String, dynamic> tarea) {
-    DateTime fechaSiguiente = DateTime.parse(tarea['fechaInicio']);
-    String frecuencia = tarea['frecuencia'];
+    DateTime fechaSiguiente;
+    String? frecuencia = tarea['frecuencia'];
+
+    if (frecuencia == 'Nunca') {
+      fechaSiguiente = DateTime(1900, 1, 1);
+    } else {
+      fechaSiguiente =
+          DateTime.parse(tarea['fechaSiguiente'] ?? tarea['fechaInicio']);
+    }
 
     if (frecuencia == 'Diariamente') {
       fechaSiguiente = fechaSiguiente.add(const Duration(days: 1));

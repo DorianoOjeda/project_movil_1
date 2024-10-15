@@ -15,13 +15,14 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topCenter,
-              end: Alignment.bottomCenter,
-              colors: [Color(0xFF4A148C), Color(0xFF12005E)], // Fondo degradado
-            ),
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Color(0xFF4A148C), Color(0xFF12005E)],
           ),
+        ),
+        child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.all(12.0),
             child: Form(
@@ -29,6 +30,7 @@ class _LoginPageState extends State<LoginPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
+                  const SizedBox(height: 80),
                   Padding(
                     padding: const EdgeInsets.only(
                       top: 100.0,
@@ -39,14 +41,15 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                   const Center(
-                      child: Text(
-                    "Mi Mejor Ser",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 40,
-                      fontWeight: FontWeight.bold,
+                    child: Text(
+                      "Mi Mejor Ser",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  )),
+                  ),
                   const SizedBox(height: 20),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
@@ -59,24 +62,26 @@ class _LoginPageState extends State<LoginPage> {
                             errorText: 'Please enter a valid email address'),
                       ]).call,
                       decoration: const InputDecoration(
-                          labelStyle: TextStyle(color: Colors.white),
-                          hintText: 'Email',
-                          labelText: 'Email',
-                          prefixIcon: Icon(
-                            Icons.email,
-                            color: Colors.grey,
-                          ),
-                          errorStyle: TextStyle(fontSize: 18.0),
-                          border: OutlineInputBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(9.0)))),
+                        labelStyle: TextStyle(color: Colors.white),
+                        hintText: 'Email',
+                        labelText: 'Email',
+                        prefixIcon: Icon(
+                          Icons.email,
+                          color: Colors.grey,
+                        ),
+                        errorStyle: TextStyle(fontSize: 18.0),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(9.0)),
+                        ),
+                      ),
                     ),
                   ),
+                  const SizedBox(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       style: const TextStyle(color: Colors.white),
-                      obscureText: true, // Para ocultar la contraseña
+                      obscureText: true,
                       keyboardType: TextInputType.text,
                       validator: MultiValidator([
                         RequiredValidator(errorText: 'Please enter a password'),
@@ -132,10 +137,13 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
+                  const SizedBox(height: 200),
                 ],
               ),
             ),
-          )),
+          ),
+        ),
+      ),
     );
   }
 }
