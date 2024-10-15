@@ -1,8 +1,10 @@
 import 'package:intl/intl.dart';
-import 'package:project_1/ui/pages/tareas/rachas.dart';
+import 'package:project_1/managers/rachasmanager.dart';
 
 class TaskManager {
   TaskManager._privateConstructor();
+
+  RachasManager rachasManager = RachasManager();
 
   static final TaskManager instance = TaskManager._privateConstructor();
 
@@ -12,8 +14,15 @@ class TaskManager {
     return listOfTask;
   }
 
+  int getSuperRacha() {
+    return rachasManager.getSuperRachaNumber();
+  }
+
   void addToList(Map<String, dynamic> tarea) {
     listOfTask.add(tarea);
+    // Verificamos si todas las tareas del día están completadas después de agregar una nueva
+    List<Map<String, dynamic>> tareasDelDia = getTareasDelDia(DateTime.now());
+    rachasManager.verificarSuperracha(tareasDelDia);
   }
 
   List<Map<String, dynamic>> getTareasDelDia(DateTime fecha) {
@@ -90,7 +99,12 @@ class TaskManager {
 
   Map<String, dynamic> marcarTareaComoCompletada(Map<String, dynamic> tarea) {
     tarea['completada'] = true;
-    RachasManager.actualizarRacha(tarea, true);
+    rachasManager.actualizarRachaTarea(tarea, true);
+
+    // Verifica si se debe activar la superracha después de marcar como completada
+    List<Map<String, dynamic>> tareasDelDia = getTareasDelDia(DateTime.now());
+    rachasManager.verificarSuperracha(tareasDelDia);
+
     if (tarea['frecuencia'] != 'Nunca') {
       tarea = setFechaSiguiente(tarea);
     }
@@ -99,11 +113,9 @@ class TaskManager {
 
   Map<String, dynamic> incrementarCantidadProgreso(
       Map<String, dynamic> tarea, int cantidad) {
-    if (tarea['completada']) {
-      return tarea;
-    }
+    if (tarea['completada']) return tarea;
     if (tarea['cantidadProgreso'] < tarea['cantidad']) {
-      tarea['cantidadProgreso'] = tarea['cantidadProgreso'] + cantidad;
+      tarea['cantidadProgreso'] += cantidad;
       if (tarea['cantidadProgreso'] == tarea['cantidad']) {
         tarea = marcarTareaComoCompletada(tarea);
       }
@@ -115,10 +127,8 @@ class TaskManager {
 
   Map<String, dynamic> decrementarCantidadProgreso(
       Map<String, dynamic> tarea, int cantidad) {
-    if (tarea['completada']) {
-      return tarea;
-    }
-    tarea['cantidadProgreso'] = tarea['cantidadProgreso'] - cantidad;
+    if (tarea['completada']) return tarea;
+    tarea['cantidadProgreso'] -= cantidad;
     if (tarea['cantidadProgreso'] < 0) {
       tarea['cantidadProgreso'] = 0;
     }
@@ -138,9 +148,8 @@ class TaskManager {
 
   bool mostrarTarea(DateTime fechaInicio, DateTime fechaSiguiente) {
     DateTime today = DateTime.now();
-    if (today.isBefore(fechaInicio)) {
-      return false;
-    }
-    return (isSameDay(today, fechaInicio) || isSameDay(today, fechaSiguiente));
+    return today.isBefore(fechaInicio)
+        ? false
+        : (isSameDay(today, fechaInicio) || isSameDay(today, fechaSiguiente));
   }
 }
