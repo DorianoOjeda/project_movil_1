@@ -1,3 +1,4 @@
+import 'package:project_1/managers/taskmanager.dart';
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
 import 'package:project_1/ui/pages/calendar/calendar_widget.dart';
@@ -82,10 +83,12 @@ TareasAddPage getTareasAddPage() {
 }
 
 bool isRachaActive(int? racha) {
+  if (getSuperRachaNumber() > 0) {
+    return true;
+  }
   if (racha != null) {
     racha > 0 ? true : false;
   }
-  // this part should be for the super racha
   return false;
 }
 
@@ -107,6 +110,5 @@ SizedBox getRachaImage(int racha, double width, double height,
 }
 
 int getSuperRachaNumber() {
-  // This function will be used to get the number of the super racha, will change when implemented
-  return 0;
+  return TaskManager.instance.getSuperRacha();
 }
