@@ -10,11 +10,27 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   bool showTasks = false;
+  DateTime selectedDate = DateTime.now();
+  List<Map<String, dynamic>> tareas = [];
+
+  void _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate,
+      firstDate: DateTime(2022),
+      lastDate: DateTime(2030),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     List<Map<String, dynamic>> tareas =
-        TaskManager.instance.getTareasDelDia(DateTime.now());
+        TaskManager.instance.getTareasDelDia(selectedDate);
     return Scaffold(
       body: Stack(
         children: [
@@ -157,6 +173,30 @@ class _HomePageState extends State<HomePage> {
                   child: Icon(
                     showTasks ? Icons.arrow_downward : Icons.arrow_upward,
                   ),
+                ),
+              ],
+            ),
+          ),
+          Positioned(
+            bottom: 20,
+            left: 150,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  "Seleccionar Fecha",
+                  style: TextStyle(
+                    color: showTasks ? Colors.black : Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 5),
+                FloatingActionButton(
+                  heroTag: 'uniqueFabTag2',
+                  onPressed: () {
+                    _selectDate(context);
+                  },
+                  child: const Icon(Icons.calendar_today),
                 ),
               ],
             ),
