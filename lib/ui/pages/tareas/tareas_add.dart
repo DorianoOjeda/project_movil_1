@@ -236,12 +236,10 @@ class _TareasAddPageState extends State<TareasAddPage> {
       cantidadProgreso: _esBooleana ? null : 0,
       frecuencia: _frecuenciaRepeticion,
       fechaInicio: DateFormat('yyyy-MM-dd').format(_fechaInicio),
-      fechaSiguiente: null,
       completada: false,
       racha: 0,
     );
 
-    nuevaTarea = TaskManager.instance.setFechaSiguiente(nuevaTarea);
     TaskManager.instance.addToList(nuevaTarea);
     Navigator.pop(context);
   }

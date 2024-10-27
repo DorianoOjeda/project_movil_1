@@ -28,15 +28,45 @@ class TaskManager {
   List<Map<String, dynamic>> getTareasDelDia(DateTime fecha) {
     print(listOfTask);
     return listOfTask.where((tarea) {
-      bool esDiaValido =
-          isSameDay(DateTime.parse(tarea['fechaInicio']), fecha) ||
-              isSameDay(DateTime.parse(tarea['fechaSiguiente']), fecha);
+      DateTime tareaFormat = DateTime.parse(tarea['fechaInicio']);
 
-      // Si coincide con la fecha siguiente y la frecuencia no es null, marca la tarea como no completada
-      if (isSameDay(DateTime.parse(tarea['fechaSiguiente']), fecha) &&
-          tarea['frecuencia'] != 'Nunca') {
+      if (isSameDay(tareaFormat, fecha)) {
+        return true;
+      }
+
+      if (tarea['frecuencia'] == 'Diariamente') {
         tarea['completada'] = false;
-        if (tarea['cantidadProgreso'] == tarea['cantidad']) {
+        tarea['cantidadProgreso'] = 0;
+        return true;
+      }
+
+      bool esDiaValido = false;
+
+      String dayOfTask = DateFormat('EEEE').format(tareaFormat);
+      String dayOfToday = DateFormat('EEEE').format(fecha);
+
+      if (tarea['frecuencia'] == 'Semanalmente' && dayOfTask == dayOfToday) {
+        tarea['completada'] = false;
+        esDiaValido = true;
+        tarea['cantidadProgreso'] = 0;
+      }
+
+      if (tarea['frecuencia'] == 'Mensualmente') {
+        int day = tareaFormat.day;
+
+        if (day == 31 && [4, 6, 9, 11].contains(fecha.month)) {
+          day = 30;
+        }
+        if (day == 31 && fecha.month == 2) {
+          if (fecha.year % 4 == 0) {
+            day = 29;
+          } else {
+            day = 28;
+          }
+        }
+        if (day == fecha.day) {
+          tarea['completada'] = false;
+          esDiaValido = true;
           tarea['cantidadProgreso'] = 0;
         }
       }
@@ -53,7 +83,6 @@ class TaskManager {
       required int? cantidadProgreso,
       required String frecuencia,
       required String fechaInicio,
-      required String? fechaSiguiente,
       required bool completada,
       required int racha}) {
     return {
@@ -64,47 +93,9 @@ class TaskManager {
       'cantidadProgreso': cantidadProgreso,
       'frecuencia': frecuencia,
       'fechaInicio': fechaInicio,
-      'fechaSiguiente': fechaSiguiente,
       'completada': completada,
       'racha': racha,
     };
-  }
-
-  Map<String, dynamic> setFechaSiguiente(Map<String, dynamic> tarea) {
-    DateTime fechaSiguiente;
-    String? frecuencia = tarea['frecuencia'];
-
-    if (frecuencia == 'Nunca') {
-      fechaSiguiente = DateTime(1900, 1, 1);
-    } else {
-      fechaSiguiente =
-          DateTime.parse(tarea['fechaSiguiente'] ?? tarea['fechaInicio']);
-    }
-
-    if (frecuencia == 'Diariamente') {
-      fechaSiguiente = fechaSiguiente.add(const Duration(days: 1));
-    } else if (frecuencia == 'Semanalmente') {
-      fechaSiguiente = fechaSiguiente.add(const Duration(days: 7));
-    } else if (frecuencia == 'Mensualmente') {
-      int year = fechaSiguiente.year;
-      int month = fechaSiguiente.month + 1;
-
-      if (month > 12) {
-        month = 1;
-        year += 1;
-      }
-
-      int day = fechaSiguiente.day;
-      int lastDayOfMonth = DateTime(year, month + 1, 0)
-          .day; // Día 0 del siguiente mes es el último día del mes actual
-
-      // Si el día original no existe en el nuevo mes, establece el último día del mes
-      day = (day > lastDayOfMonth) ? lastDayOfMonth : day;
-      fechaSiguiente = DateTime(year, month, day);
-    }
-
-    tarea['fechaSiguiente'] = DateFormat('yyyy-MM-dd').format(fechaSiguiente);
-    return tarea;
   }
 
   String getFechaSiguiente(Map<String, dynamic> tarea) {
@@ -124,10 +115,6 @@ class TaskManager {
     // Verifica si se debe activar la superracha después de marcar como completada
     List<Map<String, dynamic>> tareasDelDia = getTareasDelDia(DateTime.now());
     rachasManager.verificarSuperracha(tareasDelDia);
-
-    if (tarea['frecuencia'] != 'Nunca') {
-      tarea = setFechaSiguiente(tarea);
-    }
     return tarea;
   }
 
@@ -159,17 +146,5 @@ class TaskManager {
     return date1.year == date2.year &&
         date1.month == date2.month &&
         date1.day == date2.day;
-  }
-
-  bool desbloquearTarea(DateTime fechaInicio, DateTime fechaSiguiente) {
-    DateTime today = DateTime.now();
-    return (isSameDay(today, fechaInicio) || isSameDay(today, fechaSiguiente));
-  }
-
-  bool mostrarTarea(DateTime fechaInicio, DateTime fechaSiguiente) {
-    DateTime today = DateTime.now();
-    return today.isBefore(fechaInicio)
-        ? false
-        : (isSameDay(today, fechaInicio) || isSameDay(today, fechaSiguiente));
   }
 }
