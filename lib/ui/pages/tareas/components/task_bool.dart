@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
 import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/models/tarea.dart';
 
 class TaskBool extends StatefulWidget {
-  final Map<String, dynamic> tarea;
+  final Tarea tarea;
   const TaskBool({super.key, required this.tarea});
   @override
   State<TaskBool> createState() => _TaskBoolState();
@@ -12,8 +13,8 @@ class TaskBool extends StatefulWidget {
 class _TaskBoolState extends State<TaskBool> {
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> tarea = widget.tarea;
-    bool isNonRepeating = tarea['frecuencia'] == "Nunca";
+    Tarea tarea = widget.tarea;
+    bool isNonRepeating = tarea.frecuencia == "Nunca";
 
     return Container(
       margin: const EdgeInsets.only(right: 5, left: 5),
@@ -24,7 +25,7 @@ class _TaskBoolState extends State<TaskBool> {
       ),
       child: ListTile(
         title: Text(
-          tarea['titulo'],
+          tarea.titulo,
           maxLines: 1,
           style: const TextStyle(
             color: Color.fromARGB(255, 255, 255, 255),
@@ -32,10 +33,8 @@ class _TaskBoolState extends State<TaskBool> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        subtitle: isNonRepeating
-            ? null
-            : prederminedText("${tarea['frecuencia']}", 12),
-        trailing: tarea['completada']
+        subtitle: isNonRepeating ? null : prederminedText(tarea.frecuencia, 12),
+        trailing: tarea.completada
             ? const Icon(Icons.check_circle_sharp, color: Colors.green)
             : IconButton(
                 icon: const Icon(
@@ -43,7 +42,7 @@ class _TaskBoolState extends State<TaskBool> {
                   color: Color.fromARGB(255, 165, 165, 165),
                 ),
                 onPressed: () {
-                  if (tarea['tipo'] == 'booleano') {
+                  if (tarea.tipo == 'booleano') {
                     setState(() {
                       tarea =
                           TaskManager.instance.marcarTareaComoCompletada(tarea);

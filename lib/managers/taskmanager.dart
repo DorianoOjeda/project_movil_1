@@ -1,5 +1,6 @@
 import 'package:intl/intl.dart';
 import 'package:project_1/managers/rachasmanager.dart';
+import 'package:project_1/models/tarea.dart';
 
 class TaskManager {
   TaskManager._privateConstructor();
@@ -8,36 +9,66 @@ class TaskManager {
 
   static final TaskManager instance = TaskManager._privateConstructor();
 
-  List<Map<String, dynamic>> listOfTask = [];
+  List<Tarea> _listOfTask = [];
 
-  List<Map<String, dynamic>> getTareas() {
-    return listOfTask;
+  List<Tarea> getTareas() {
+    return _listOfTask;
   }
 
   int getSuperRacha() {
     return rachasManager.getSuperRachaNumber();
   }
 
-  void addToList(Map<String, dynamic> tarea) {
-    listOfTask.add(tarea);
+  void addToList(Tarea tarea) {
+    _listOfTask.add(tarea);
     // Verificamos si todas las tareas del día están completadas después de agregar una nueva
-    List<Map<String, dynamic>> tareasDelDia = getTareasDelDia(DateTime.now());
-    rachasManager.verificarSuperracha(tareasDelDia);
+    List<Tarea> tareasDelDia = getTareasDelDia(DateTime.now());
+    rachasManager.verificarSuperracha(tareasDelDia.toList());
   }
 
-  List<Map<String, dynamic>> getTareasDelDia(DateTime fecha) {
-    print(listOfTask);
-    return listOfTask.where((tarea) {
-      bool esDiaValido =
-          isSameDay(DateTime.parse(tarea['fechaInicio']), fecha) ||
-              isSameDay(DateTime.parse(tarea['fechaSiguiente']), fecha);
+  List<Tarea> getTareasDelDia(DateTime fecha) {
+    print(_listOfTask);
+    return _listOfTask.where((tarea) {
+      DateTime tareaFormat = DateTime.parse(tarea.fechaInicio);
 
-      // Si coincide con la fecha siguiente y la frecuencia no es null, marca la tarea como no completada
-      if (isSameDay(DateTime.parse(tarea['fechaSiguiente']), fecha) &&
-          tarea['frecuencia'] != 'Nunca') {
-        tarea['completada'] = false;
-        if (tarea['cantidadProgreso'] == tarea['cantidad']) {
-          tarea['cantidadProgreso'] = 0;
+      if (isSameDay(tareaFormat, fecha)) {
+        return true;
+      }
+
+      if (tarea.frecuencia == 'Diariamente') {
+        tarea.completada = false;
+        tarea.cantidadProgreso = 0;
+        return true;
+      }
+
+      bool esDiaValido = false;
+
+      String dayOfTask = DateFormat('EEEE').format(tareaFormat);
+      String dayOfToday = DateFormat('EEEE').format(fecha);
+
+      if (tarea.frecuencia == 'Semanalmente' && dayOfTask == dayOfToday) {
+        tarea.completada = false;
+        esDiaValido = true;
+        tarea.cantidadProgreso = 0;
+      }
+
+      if (tarea.frecuencia == 'Mensualmente') {
+        int day = tareaFormat.day;
+
+        if (day == 31 && [4, 6, 9, 11].contains(fecha.month)) {
+          day = 30;
+        }
+        if (day == 31 && fecha.month == 2) {
+          if (fecha.year % 4 == 0) {
+            day = 29;
+          } else {
+            day = 28;
+          }
+        }
+        if (day == fecha.day) {
+          tarea.completada = false;
+          esDiaValido = true;
+          tarea.cantidadProgreso = 0;
         }
       }
 
@@ -45,112 +76,59 @@ class TaskManager {
     }).toList();
   }
 
-  Map<String, dynamic> createNewTarea(
-      {required String titulo,
-      required String descripcion,
-      required String tipo,
-      required int? cantidad,
-      required int? cantidadProgreso,
-      required String frecuencia,
-      required String fechaInicio,
-      required String? fechaSiguiente,
-      required bool completada,
-      required int racha}) {
-    return {
-      'titulo': titulo,
-      'descripcion': descripcion,
-      'tipo': tipo,
-      'cantidad': cantidad,
-      'cantidadProgreso': cantidadProgreso,
-      'frecuencia': frecuencia,
-      'fechaInicio': fechaInicio,
-      'fechaSiguiente': fechaSiguiente,
-      'completada': completada,
-      'racha': racha,
-    };
+  Tarea createNewTarea({
+    required String titulo,
+    required String descripcion,
+    required String tipo,
+    required int? cantidad,
+    required int? cantidadProgreso,
+    required String frecuencia,
+    required String fechaInicio,
+    required bool completada,
+    required int racha,
+  }) {
+    return Tarea(
+      titulo: titulo,
+      descripcion: descripcion,
+      tipo: tipo,
+      cantidad: cantidad,
+      cantidadProgreso: cantidadProgreso,
+      frecuencia: frecuencia,
+      fechaInicio: fechaInicio,
+      completada: completada,
+      racha: racha,
+    );
   }
 
-  Map<String, dynamic> setFechaSiguiente(Map<String, dynamic> tarea) {
-    DateTime fechaSiguiente;
-    String? frecuencia = tarea['frecuencia'];
-
-    if (frecuencia == 'Nunca') {
-      fechaSiguiente = DateTime(1900, 1, 1);
-    } else {
-      fechaSiguiente =
-          DateTime.parse(tarea['fechaSiguiente'] ?? tarea['fechaInicio']);
-    }
-
-    if (frecuencia == 'Diariamente') {
-      fechaSiguiente = fechaSiguiente.add(const Duration(days: 1));
-    } else if (frecuencia == 'Semanalmente') {
-      fechaSiguiente = fechaSiguiente.add(const Duration(days: 7));
-    } else if (frecuencia == 'Mensualmente') {
-      int year = fechaSiguiente.year;
-      int month = fechaSiguiente.month + 1;
-
-      if (month > 12) {
-        month = 1;
-        year += 1;
-      }
-
-      int day = fechaSiguiente.day;
-      int lastDayOfMonth = DateTime(year, month + 1, 0)
-          .day; // Día 0 del siguiente mes es el último día del mes actual
-
-      // Si el día original no existe en el nuevo mes, establece el último día del mes
-      day = (day > lastDayOfMonth) ? lastDayOfMonth : day;
-      fechaSiguiente = DateTime(year, month, day);
-    }
-
-    tarea['fechaSiguiente'] = DateFormat('yyyy-MM-dd').format(fechaSiguiente);
-    return tarea;
-  }
-
-  String getFechaSiguiente(Map<String, dynamic> tarea) {
-    if (tarea['fechaSiguiente'] == null) {
-      return "No hay fecha siguiente";
-    } else if (isSameDay(DateTime.parse(tarea['fechaSiguiente']),
-        DateTime.now().add(const Duration(days: 1)))) {
-      return "Mañana";
-    }
-    return tarea['fechaSiguiente'];
-  }
-
-  Map<String, dynamic> marcarTareaComoCompletada(Map<String, dynamic> tarea) {
-    tarea['completada'] = true;
+  Tarea marcarTareaComoCompletada(Tarea tarea) {
+    tarea.completada = true;
     rachasManager.actualizarRachaTarea(tarea, true);
 
     // Verifica si se debe activar la superracha después de marcar como completada
-    List<Map<String, dynamic>> tareasDelDia = getTareasDelDia(DateTime.now());
-    rachasManager.verificarSuperracha(tareasDelDia);
-
-    if (tarea['frecuencia'] != 'Nunca') {
-      tarea = setFechaSiguiente(tarea);
-    }
+    List<Tarea> tareasDelDia = getTareasDelDia(DateTime.now());
+    rachasManager.verificarSuperracha(tareasDelDia.toList());
     return tarea;
   }
 
-  Map<String, dynamic> incrementarCantidadProgreso(
-      Map<String, dynamic> tarea, int cantidad) {
-    if (tarea['completada']) return tarea;
-    if (tarea['cantidadProgreso'] < tarea['cantidad']) {
-      tarea['cantidadProgreso'] += cantidad;
-      if (tarea['cantidadProgreso'] == tarea['cantidad']) {
+  Tarea incrementarCantidadProgreso(Tarea tarea, int cantidad) {
+    if (tarea.completada) return tarea;
+    if (tarea.cantidadProgreso! < tarea.cantidad!) {
+      tarea.cantidadProgreso = tarea.cantidadProgreso! + cantidad;
+      if (tarea.cantidadProgreso == tarea.cantidad) {
         tarea = marcarTareaComoCompletada(tarea);
       }
-      return tarea;
     }
-    tarea['cantidadProgreso'] = tarea['cantidad'];
+    if (tarea.cantidadProgreso! >= tarea.cantidad!) {
+      tarea.cantidadProgreso = tarea.cantidad;
+    }
     return tarea;
   }
 
-  Map<String, dynamic> decrementarCantidadProgreso(
-      Map<String, dynamic> tarea, int cantidad) {
-    if (tarea['completada']) return tarea;
-    tarea['cantidadProgreso'] -= cantidad;
-    if (tarea['cantidadProgreso'] < 0) {
-      tarea['cantidadProgreso'] = 0;
+  Tarea decrementarCantidadProgreso(Tarea tarea, int cantidad) {
+    if (tarea.completada) return tarea;
+    tarea.cantidadProgreso = tarea.cantidadProgreso! - cantidad;
+    if (tarea.cantidadProgreso! < 0) {
+      tarea.cantidadProgreso = 0;
     }
     return tarea;
   }

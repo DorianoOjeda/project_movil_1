@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/models/tarea.dart';
 
 class TareasAddPage extends StatefulWidget {
   const TareasAddPage({super.key});
@@ -226,7 +227,7 @@ class _TareasAddPageState extends State<TareasAddPage> {
       return;
     }
 
-    Map<String, dynamic> nuevaTarea = TaskManager.instance.createNewTarea(
+    Tarea nuevaTarea = TaskManager.instance.createNewTarea(
       titulo: _tituloController.text,
       descripcion: _descripcionController.text.isEmpty
           ? ''

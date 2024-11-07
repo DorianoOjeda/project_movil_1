@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
 import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/models/tarea.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,7 +12,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool showTasks = false;
   DateTime selectedDate = DateTime.now();
-  List<Map<String, dynamic>> tareas = [];
+  List<Tarea> tareas = []; // pq tengo dos tareas?
 
   void _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -29,8 +30,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> tareas =
-        TaskManager.instance.getTareasDelDia(selectedDate);
+    List<Tarea> tareas = TaskManager.instance.getTareasDelDia(selectedDate);
     return Scaffold(
       body: Stack(
         children: [

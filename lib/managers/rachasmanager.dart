@@ -1,17 +1,19 @@
+import 'package:project_1/models/tarea.dart';
+
 class RachasManager {
   int superracha = 0;
   bool tieneSuperracha = false;
 
-  void actualizarRachaTarea(Map<String, dynamic> tarea, bool completadaHoy) {
+  void actualizarRachaTarea(Tarea tarea, bool completadaHoy) {
     if (completadaHoy) {
-      tarea['racha'] = (tarea['racha'] ?? 0) + 1;
+      tarea.racha = (tarea.racha ?? 0) + 1;
     }
   }
 
   // Método para verificar y activar la superracha
-  void verificarSuperracha(List<Map<String, dynamic>> tareasDelDia) {
+  void verificarSuperracha(List<Tarea> tareasDelDia) {
     bool todasCompletadas =
-        tareasDelDia.every((tarea) => tarea['completada'] == true);
+        tareasDelDia.every((tarea) => tarea.completada == true);
 
     if (todasCompletadas) {
       if (!tieneSuperracha) {
@@ -26,10 +28,9 @@ class RachasManager {
     }
   }
 
-  void verificarTareasDelDiaAnterior(
-      List<Map<String, dynamic>> tareasDelDiaAnterior) {
+  void verificarTareasDelDiaAnterior(List<Tarea> tareasDelDiaAnterior) {
     bool todasCompletadas =
-        tareasDelDiaAnterior.every((tarea) => tarea['completada'] == true);
+        tareasDelDiaAnterior.every((tarea) => tarea.completada == true);
 
     if (todasCompletadas && !tieneSuperracha) {
       tieneSuperracha = true;
