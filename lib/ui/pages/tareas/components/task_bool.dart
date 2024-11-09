@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
-import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/controllers/taskController.dart';
 import 'package:project_1/models/tarea.dart';
 
 class TaskBool extends StatefulWidget {
@@ -42,12 +42,9 @@ class _TaskBoolState extends State<TaskBool> {
                   color: Color.fromARGB(255, 165, 165, 165),
                 ),
                 onPressed: () {
-                  if (tarea.tipo == 'booleano') {
-                    setState(() {
-                      tarea =
-                          TaskManager.instance.marcarTareaComoCompletada(tarea);
-                    });
-                  }
+                  setState(() {
+                    TaskController.instance.marcarTareaComoCompletada(tarea);
+                  });
                 },
                 constraints: const BoxConstraints(maxWidth: 18, maxHeight: 40),
               ),

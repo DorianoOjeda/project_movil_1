@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
-import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/controllers/taskController.dart';
 import 'package:project_1/models/tarea.dart';
 
 class TaskQkt extends StatefulWidget {
@@ -57,7 +57,7 @@ class _TaskQktState extends State<TaskQkt> {
                               size: 17, color: Colors.white),
                           onPressed: () {
                             setState(() {
-                              tarea = TaskManager.instance
+                              TaskController.instance
                                   .decrementarCantidadProgreso(tarea, 1);
                             });
                           },
@@ -72,7 +72,7 @@ class _TaskQktState extends State<TaskQkt> {
                               size: 17, color: Colors.white),
                           onPressed: () {
                             setState(() {
-                              tarea = TaskManager.instance
+                              TaskController.instance
                                   .incrementarCantidadProgreso(tarea, 1);
                             });
                           },

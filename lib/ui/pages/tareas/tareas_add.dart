@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:project_1/managers/taskmanager.dart';
-import 'package:project_1/models/tarea.dart';
+import 'package:project_1/controllers/taskController.dart';
+import 'package:provider/provider.dart';
 
 class TareasAddPage extends StatefulWidget {
   const TareasAddPage({super.key});
@@ -227,7 +227,7 @@ class _TareasAddPageState extends State<TareasAddPage> {
       return;
     }
 
-    Tarea nuevaTarea = TaskManager.instance.createNewTarea(
+    Provider.of<TaskController>(context, listen: false).createNewTarea(
       titulo: _tituloController.text,
       descripcion: _descripcionController.text.isEmpty
           ? ''
@@ -237,13 +237,10 @@ class _TareasAddPageState extends State<TareasAddPage> {
       cantidadProgreso: _esBooleana ? null : 0,
       frecuencia: _frecuenciaRepeticion,
       fechaInicio: DateFormat('yyyy-MM-dd').format(_fechaInicio),
-      fechaSiguiente: null,
       completada: false,
       racha: 0,
     );
 
-    nuevaTarea = TaskManager.instance.setFechaSiguiente(nuevaTarea);
-    TaskManager.instance.addToList(nuevaTarea);
     Navigator.pop(context);
   }
 

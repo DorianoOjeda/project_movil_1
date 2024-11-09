@@ -1,19 +1,30 @@
+import 'dart:collection';
+
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_1/managers/rachasmanager.dart';
 import 'package:project_1/models/tarea.dart';
 
-class TaskManager {
-  TaskManager._privateConstructor();
+class TaskController extends ChangeNotifier {
+  TaskController._privateConstructor();
+  static final TaskController instance = TaskController._privateConstructor();
 
   RachasManager rachasManager = RachasManager();
 
-  static final TaskManager instance = TaskManager._privateConstructor();
+  final List<Tarea> _listOfTask = [];
+  List<Tarea> _tareasDelDia = [];
+  List<Tarea> _tareasDelDiaSelected = []; // To use in calendar
 
-  List<Tarea> _listOfTask = [];
+  List<Tarea> get listOfTask => _listOfTask;
+  List<Tarea> get tareasDelDia => _tareasDelDia;
+  List<Tarea> get tareasDelDiaSelected => _tareasDelDiaSelected;
 
-  List<Tarea> getTareas() {
-    return _listOfTask;
-  }
+  UnmodifiableListView<Tarea> get listOfTaskUnmodifiable =>
+      UnmodifiableListView(_listOfTask);
+  UnmodifiableListView<Tarea> get tareasDelDiaUnmodifiable =>
+      UnmodifiableListView(_tareasDelDia);
+  UnmodifiableListView<Tarea> get tareasDelDiaSelectedUnmodifiable =>
+      UnmodifiableListView(_tareasDelDiaSelected);
 
   int getSuperRacha() {
     return rachasManager.getSuperRachaNumber();
@@ -21,14 +32,17 @@ class TaskManager {
 
   void addToList(Tarea tarea) {
     _listOfTask.add(tarea);
+    if (tarea.fechaInicio == DateFormat('yyyy-MM-dd').format(DateTime.now())) {
+      _tareasDelDia.add(tarea);
+      notifyListeners();
+    }
     // Verificamos si todas las tareas del día están completadas después de agregar una nueva
-    List<Tarea> tareasDelDia = getTareasDelDia(DateTime.now());
-    rachasManager.verificarSuperracha(tareasDelDia.toList());
+    //List<Tarea> tareasDelDia = getTareasDelDia();
+    //rachasManager.verificarSuperracha(tareasDelDia.toList());
   }
 
-  List<Tarea> getTareasDelDia(DateTime fecha) {
-    print(_listOfTask);
-    return _listOfTask.where((tarea) {
+  void createTareasDelDia(DateTime fecha, bool? isCalendar) {
+    List<Tarea> t = _listOfTask.where((tarea) {
       DateTime tareaFormat = DateTime.parse(tarea.fechaInicio);
 
       if (isSameDay(tareaFormat, fecha)) {
@@ -74,9 +88,23 @@ class TaskManager {
 
       return esDiaValido;
     }).toList();
+
+    if (isCalendar != null && isCalendar) {
+      _tareasDelDiaSelected = t;
+    } else {
+      _tareasDelDia = t;
+    }
   }
 
-  Tarea createNewTarea({
+  List<Tarea> getTareasDelDia() {
+    return _tareasDelDia;
+  }
+
+  void createTareasByDate(DateTime fecha) {
+    createTareasDelDia(fecha, true);
+  }
+
+  void createNewTarea({
     required String titulo,
     required String descripcion,
     required String tipo,
@@ -87,7 +115,7 @@ class TaskManager {
     required bool completada,
     required int racha,
   }) {
-    return Tarea(
+    addToList(Tarea(
       titulo: titulo,
       descripcion: descripcion,
       tipo: tipo,
@@ -97,40 +125,36 @@ class TaskManager {
       fechaInicio: fechaInicio,
       completada: completada,
       racha: racha,
-    );
+    ));
   }
 
-  Tarea marcarTareaComoCompletada(Tarea tarea) {
+  void marcarTareaComoCompletada(Tarea tarea) {
     tarea.completada = true;
-    rachasManager.actualizarRachaTarea(tarea, true);
-
+    notifyListeners();
+    //rachasManager.actualizarRachaTarea(tarea, true);
     // Verifica si se debe activar la superracha después de marcar como completada
-    List<Tarea> tareasDelDia = getTareasDelDia(DateTime.now());
-    rachasManager.verificarSuperracha(tareasDelDia.toList());
-    return tarea;
+    //rachasManager.verificarSuperracha(_tareasDelDia);
   }
 
-  Tarea incrementarCantidadProgreso(Tarea tarea, int cantidad) {
-    if (tarea.completada) return tarea;
+  void incrementarCantidadProgreso(Tarea tarea, int cantidad) {
     if (tarea.cantidadProgreso! < tarea.cantidad!) {
       tarea.cantidadProgreso = tarea.cantidadProgreso! + cantidad;
       if (tarea.cantidadProgreso == tarea.cantidad) {
-        tarea = marcarTareaComoCompletada(tarea);
+        marcarTareaComoCompletada(tarea);
       }
     }
     if (tarea.cantidadProgreso! >= tarea.cantidad!) {
       tarea.cantidadProgreso = tarea.cantidad;
     }
-    return tarea;
+    notifyListeners();
   }
 
-  Tarea decrementarCantidadProgreso(Tarea tarea, int cantidad) {
-    if (tarea.completada) return tarea;
+  void decrementarCantidadProgreso(Tarea tarea, int cantidad) {
     tarea.cantidadProgreso = tarea.cantidadProgreso! - cantidad;
     if (tarea.cantidadProgreso! < 0) {
       tarea.cantidadProgreso = 0;
     }
-    return tarea;
+    notifyListeners();
   }
 
   bool isSameDay(DateTime date1, DateTime date2) {
@@ -139,15 +163,7 @@ class TaskManager {
         date1.day == date2.day;
   }
 
-  bool desbloquearTarea(DateTime fechaInicio, DateTime fechaSiguiente) {
-    DateTime today = DateTime.now();
-    return (isSameDay(today, fechaInicio) || isSameDay(today, fechaSiguiente));
-  }
-
-  bool mostrarTarea(DateTime fechaInicio, DateTime fechaSiguiente) {
-    DateTime today = DateTime.now();
-    return today.isBefore(fechaInicio)
-        ? false
-        : (isSameDay(today, fechaInicio) || isSameDay(today, fechaSiguiente));
+  bool isDairyTaskEmpty() {
+    return _tareasDelDia.isEmpty;
   }
 }

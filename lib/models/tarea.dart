@@ -7,7 +7,7 @@ class Tarea {
   String frecuencia;
   String fechaInicio;
   bool completada;
-  int racha;
+  int? racha;
 
   Tarea(
       {required this.titulo,

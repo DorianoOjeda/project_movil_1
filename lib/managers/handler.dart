@@ -1,4 +1,4 @@
-import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/controllers/taskController.dart';
 import 'package:project_1/models/tarea.dart';
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
@@ -84,7 +84,7 @@ TareasAddPage getTareasAddPage() {
 }
 
 bool isRachaActive(int? racha) {
-  if (getSuperRachaNumber() > 0) {
+  if (getTaskController().getSuperRacha() > 0) {
     return true;
   }
   if (racha != null) {
@@ -110,6 +110,6 @@ SizedBox getRachaImage(int racha, double width, double height,
   );
 }
 
-int getSuperRachaNumber() {
-  return TaskManager.instance.getSuperRacha();
+TaskController getTaskController() {
+  return TaskController.instance;
 }
