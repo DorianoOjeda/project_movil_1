@@ -15,7 +15,7 @@ class _TaskQktState extends State<TaskQkt> {
   @override
   Widget build(BuildContext context) {
     Tarea tarea = widget.tarea;
-    final int cantidadMaxima = tarea.cantidad!;
+    final int cantidadMaxima = tarea.cantidad ?? 1;
 
     return Container(
       margin: const EdgeInsets.only(right: 5, left: 5),
@@ -41,52 +41,84 @@ class _TaskQktState extends State<TaskQkt> {
                   ),
                 ),
               ),
-              if (!tarea.completada)
-                Padding(
-                  padding: const EdgeInsets.only(left: 10),
-                  child: Container(
-                    margin: const EdgeInsets.only(top: 5),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.white),
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.remove,
-                              size: 17, color: Colors.white),
-                          onPressed: () {
-                            Provider.of<TaskController>(context, listen: false)
-                                .decrementarCantidadProgreso(tarea, 1);
-                          },
-                        ),
-                        Container(
-                          height: 20,
-                          width: 1,
+              if (!tarea.completada) ...[
+                if (tarea.racha != null && tarea.racha! > 0)
+                  Row(
+                    children: [
+                      getRachaImage(tarea.racha!, 25, 25,
+                          completada: tarea.completada),
+                      const SizedBox(width: 5),
+                      Text(
+                        tarea.racha.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.add,
-                              size: 17, color: Colors.white),
-                          onPressed: () {
-                            setState(() {
-                              Provider.of<TaskController>(context,
-                                      listen: false)
-                                  .incrementarCantidadProgreso(
-                                      tarea, 1, context);
-                            });
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
+                  ),
+                Container(
+                  margin: const EdgeInsets.only(left: 10),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.white),
+                    borderRadius: BorderRadius.circular(5),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.remove,
+                            size: 17, color: Colors.white),
+                        onPressed: () {
+                          Provider.of<TaskController>(context, listen: false)
+                              .decrementarCantidadProgreso(tarea, 1);
+                        },
+                      ),
+                      Container(
+                        height: 20,
+                        width: 1,
+                        color: Colors.white,
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.add,
+                            size: 17, color: Colors.white),
+                        onPressed: () {
+                          if (tarea.cantidadProgreso! < cantidadMaxima) {
+                            Provider.of<TaskController>(context, listen: false)
+                                .incrementarCantidadProgreso(tarea, 1, context);
+                          }
+                        },
+                      ),
+                    ],
                   ),
                 ),
-              if (tarea.completada)
-                const Padding(
-                  padding: EdgeInsets.only(left: 15),
-                  child: Icon(Icons.check_circle_sharp, color: Colors.green),
-                ),
+              ] else ...[
+                if (tarea.racha != null && tarea.racha! > 0)
+                  Row(
+                    children: [
+                      Consumer<TaskController>(
+                        builder: (context, taskManager, child) {
+                          return getRachaImage(tarea.racha!, 25, 25,
+                              completada: tarea.completada);
+                        },
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        tarea.racha.toString(),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                      const SizedBox(width: 20),
+                      const Icon(Icons.check_circle_sharp, color: Colors.green),
+                    ],
+                  )
+                else
+                  const Icon(Icons.check_circle_sharp, color: Colors.green),
+              ],
             ],
           ),
           const SizedBox(height: 10),
@@ -99,11 +131,11 @@ class _TaskQktState extends State<TaskQkt> {
                 LinearProgressIndicator(
                   minHeight: 10,
                   value: cantidadMaxima > 0
-                      ? tarea.cantidadProgreso! / cantidadMaxima
+                      ? (tarea.cantidadProgreso ?? 0) / cantidadMaxima
                       : 0,
                 ),
                 prederminedText(
-                  "${tarea.cantidadProgreso} / ${tarea.cantidad}",
+                  "${tarea.cantidadProgreso ?? 0} / ${tarea.cantidad}",
                   13,
                 ),
               ],

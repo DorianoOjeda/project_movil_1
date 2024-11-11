@@ -9,6 +9,8 @@ class TaskController extends ChangeNotifier {
   TaskController._privateConstructor();
   static final TaskController instance = TaskController._privateConstructor();
 
+  bool _isSameDay = false;
+
   final List<Tarea> _listOfTask = [];
   List<Tarea> _tareasDelDia = [];
   List<Tarea> _tareasDelDiaSelected = []; // To use in calendar
@@ -27,6 +29,7 @@ class TaskController extends ChangeNotifier {
   void addToList(Tarea tarea) {
     _listOfTask.add(tarea);
     if (tarea.fechaInicio == DateFormat('yyyy-MM-dd').format(DateTime.now())) {
+      _isSameDay = true;
       _tareasDelDia.add(tarea);
       notifyListeners();
     }
@@ -115,12 +118,11 @@ class TaskController extends ChangeNotifier {
     ));
   }
 
-  //Necesito ver la forma de hacer que rachascontroller escuche eso s cambios para que cambie el valor de la superRacha S
   void marcarTareaComoCompletada(Tarea tarea, BuildContext context) {
     tarea.completada = true;
     tarea.racha = tarea.racha! + 1;
     Provider.of<RachasController>(context, listen: false)
-        .verificarSuperracha(_listOfTask);
+        .verificarSuperracha(_listOfTask, _isSameDay);
     notifyListeners();
   }
 
@@ -159,14 +161,20 @@ class TaskController extends ChangeNotifier {
   void restartTareasDelDia(context) {
     bool isAllCompleted =
         _tareasDelDia.every((tarea) => tarea.completada == true);
-    _tareasDelDia.removeRange(0, _tareasDelDia.length);
     if (!isAllCompleted) {
       Provider.of<RachasController>(context, listen: false)
           .setSuperracha(false);
       Provider.of<RachasController>(context, listen: false).resetSuperracha();
+      for (var tarea in _tareasDelDia) {
+        if (!tarea.completada) {
+          tarea.racha = 0;
+        }
+      }
     } else {
       Provider.of<RachasController>(context, listen: false).setSuperracha(true);
     }
+    _tareasDelDia.removeRange(0, _tareasDelDia.length);
+    _isSameDay = false;
     notifyListeners();
   }
 }

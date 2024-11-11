@@ -13,14 +13,14 @@ class RachasController extends ChangeNotifier {
   bool _tieneSuperracha = false;
 
   // Método para verificar y activar la superracha
-  void verificarSuperracha(List<Tarea> tareasDelDia) {
+  void verificarSuperracha(List<Tarea> tareasDelDia, bool isSameDay) {
     bool todasCompletadas =
         tareasDelDia.every((tarea) => tarea.completada == true);
 
     if (todasCompletadas) {
       if (!_tieneSuperracha) {
         _superracha = 1;
-      } else {
+      } else if (!isSameDay) {
         _superracha++;
       }
     }
