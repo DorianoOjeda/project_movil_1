@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 void main() {
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => getTaskController()),
+    ChangeNotifierProvider(create: (_) => getRachasController()),
   ], child: const MyApp()));
 }
 

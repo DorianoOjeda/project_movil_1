@@ -1,4 +1,5 @@
-import 'package:project_1/controllers/taskController.dart';
+import 'package:project_1/controllers/rachascontroller.dart';
+import 'package:project_1/controllers/taskcontroller.dart';
 import 'package:project_1/models/tarea.dart';
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
@@ -84,7 +85,7 @@ TareasAddPage getTareasAddPage() {
 }
 
 bool isRachaActive(int? racha) {
-  if (getTaskController().getSuperRacha() > 0) {
+  if (getRachasController().superRachaNumber > 0) {
     return true;
   }
   if (racha != null) {
@@ -110,6 +111,11 @@ SizedBox getRachaImage(int racha, double width, double height,
   );
 }
 
+//get Controllers
 TaskController getTaskController() {
   return TaskController.instance;
+}
+
+RachasController getRachasController() {
+  return RachasController.instance;
 }

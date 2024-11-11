@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:project_1/controllers/rachascontroller.dart';
 import 'package:project_1/managers/handler.dart';
-import 'package:project_1/controllers/taskController.dart';
+import 'package:project_1/controllers/taskcontroller.dart';
 import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
@@ -22,6 +23,12 @@ class _HomePageState extends State<HomePage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
+        // Reiniciamos las tareas del día y creamos las tareas correspondientes a la fecha seleccionada
+        // Esto se usa para mostrar el avance de los dias.
+        Provider.of<TaskController>(context, listen: false)
+            .restartTareasDelDia(context);
+        Provider.of<TaskController>(context, listen: false)
+            .createTareasDelDia(selectedDate, false);
       });
     }
   }
@@ -56,7 +63,7 @@ class _HomePageState extends State<HomePage> {
                     Consumer<TaskController>(
                       builder: (context, taskManager, child) {
                         return Text(
-                            "Tareas de hoy: ${taskManager.getTareasDelDia().length.toString()}",
+                            "Tareas de hoy: ${taskManager.tareasDelDia.length.toString()}",
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -65,22 +72,25 @@ class _HomePageState extends State<HomePage> {
                       },
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        getRachaImage(
-                            getTaskController().getSuperRacha(), 100, 100),
-                        const SizedBox(width: 10),
-                        Text(
-                          getTaskController().getSuperRacha().toString(),
-                          style: const TextStyle(
-                            fontSize: 38,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    Consumer<RachasController>(
+                        builder: (context, rachasManager, child) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          getRachaImage(
+                              rachasManager.superRachaNumber, 100, 100),
+                          const SizedBox(width: 10),
+                          Text(
+                            rachasManager.superRachaNumber.toString(),
+                            style: const TextStyle(
+                              fontSize: 38,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      );
+                    }),
                     const SizedBox(height: 30),
                     const Text(
                       "¿Qué harás hoy?",
@@ -119,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                               ),
                             ),
                           )
-                        : getTareasListPage(taskManager.getTareasDelDia());
+                        : getTareasListPage(taskManager.tareasDelDia);
                   },
                 ),
               ),

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
-import 'package:project_1/controllers/taskController.dart';
+import 'package:project_1/controllers/taskcontroller.dart';
 import 'package:project_1/models/tarea.dart';
+import 'package:provider/provider.dart';
 
 class TaskBool extends StatefulWidget {
   final Tarea tarea;
@@ -42,9 +43,8 @@ class _TaskBoolState extends State<TaskBool> {
                   color: Color.fromARGB(255, 165, 165, 165),
                 ),
                 onPressed: () {
-                  setState(() {
-                    TaskController.instance.marcarTareaComoCompletada(tarea);
-                  });
+                  Provider.of<TaskController>(context, listen: false)
+                      .marcarTareaComoCompletada(tarea, context);
                 },
                 constraints: const BoxConstraints(maxWidth: 18, maxHeight: 40),
               ),

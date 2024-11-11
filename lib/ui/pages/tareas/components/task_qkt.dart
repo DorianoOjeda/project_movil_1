@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
-import 'package:project_1/controllers/taskController.dart';
+import 'package:project_1/controllers/taskcontroller.dart';
 import 'package:project_1/models/tarea.dart';
+import 'package:provider/provider.dart';
 
 class TaskQkt extends StatefulWidget {
   final Tarea tarea;
@@ -56,10 +57,8 @@ class _TaskQktState extends State<TaskQkt> {
                           icon: const Icon(Icons.remove,
                               size: 17, color: Colors.white),
                           onPressed: () {
-                            setState(() {
-                              TaskController.instance
-                                  .decrementarCantidadProgreso(tarea, 1);
-                            });
+                            Provider.of<TaskController>(context, listen: false)
+                                .decrementarCantidadProgreso(tarea, 1);
                           },
                         ),
                         Container(
@@ -72,8 +71,10 @@ class _TaskQktState extends State<TaskQkt> {
                               size: 17, color: Colors.white),
                           onPressed: () {
                             setState(() {
-                              TaskController.instance
-                                  .incrementarCantidadProgreso(tarea, 1);
+                              Provider.of<TaskController>(context,
+                                      listen: false)
+                                  .incrementarCantidadProgreso(
+                                      tarea, 1, context);
                             });
                           },
                         ),

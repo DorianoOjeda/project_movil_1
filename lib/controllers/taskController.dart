@@ -1,15 +1,13 @@
 import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:project_1/managers/rachasmanager.dart';
+import 'package:project_1/controllers/rachascontroller.dart';
 import 'package:project_1/models/tarea.dart';
+import 'package:provider/provider.dart';
 
 class TaskController extends ChangeNotifier {
   TaskController._privateConstructor();
   static final TaskController instance = TaskController._privateConstructor();
-
-  RachasManager rachasManager = RachasManager();
 
   final List<Tarea> _listOfTask = [];
   List<Tarea> _tareasDelDia = [];
@@ -26,19 +24,12 @@ class TaskController extends ChangeNotifier {
   UnmodifiableListView<Tarea> get tareasDelDiaSelectedUnmodifiable =>
       UnmodifiableListView(_tareasDelDiaSelected);
 
-  int getSuperRacha() {
-    return rachasManager.getSuperRachaNumber();
-  }
-
   void addToList(Tarea tarea) {
     _listOfTask.add(tarea);
     if (tarea.fechaInicio == DateFormat('yyyy-MM-dd').format(DateTime.now())) {
       _tareasDelDia.add(tarea);
       notifyListeners();
     }
-    // Verificamos si todas las tareas del día están completadas después de agregar una nueva
-    //List<Tarea> tareasDelDia = getTareasDelDia();
-    //rachasManager.verificarSuperracha(tareasDelDia.toList());
   }
 
   void createTareasDelDia(DateTime fecha, bool? isCalendar) {
@@ -96,10 +87,6 @@ class TaskController extends ChangeNotifier {
     }
   }
 
-  List<Tarea> getTareasDelDia() {
-    return _tareasDelDia;
-  }
-
   void createTareasByDate(DateTime fecha) {
     createTareasDelDia(fecha, true);
   }
@@ -128,19 +115,21 @@ class TaskController extends ChangeNotifier {
     ));
   }
 
-  void marcarTareaComoCompletada(Tarea tarea) {
+  //Necesito ver la forma de hacer que rachascontroller escuche eso s cambios para que cambie el valor de la superRacha S
+  void marcarTareaComoCompletada(Tarea tarea, BuildContext context) {
     tarea.completada = true;
+    tarea.racha = tarea.racha! + 1;
+    Provider.of<RachasController>(context, listen: false)
+        .verificarSuperracha(_listOfTask);
     notifyListeners();
-    //rachasManager.actualizarRachaTarea(tarea, true);
-    // Verifica si se debe activar la superracha después de marcar como completada
-    //rachasManager.verificarSuperracha(_tareasDelDia);
   }
 
-  void incrementarCantidadProgreso(Tarea tarea, int cantidad) {
+  void incrementarCantidadProgreso(
+      Tarea tarea, int cantidad, BuildContext context) {
     if (tarea.cantidadProgreso! < tarea.cantidad!) {
       tarea.cantidadProgreso = tarea.cantidadProgreso! + cantidad;
       if (tarea.cantidadProgreso == tarea.cantidad) {
-        marcarTareaComoCompletada(tarea);
+        marcarTareaComoCompletada(tarea, context);
       }
     }
     if (tarea.cantidadProgreso! >= tarea.cantidad!) {
@@ -165,5 +154,19 @@ class TaskController extends ChangeNotifier {
 
   bool isDairyTaskEmpty() {
     return _tareasDelDia.isEmpty;
+  }
+
+  void restartTareasDelDia(context) {
+    bool isAllCompleted =
+        _tareasDelDia.every((tarea) => tarea.completada == true);
+    _tareasDelDia.removeRange(0, _tareasDelDia.length);
+    if (!isAllCompleted) {
+      Provider.of<RachasController>(context, listen: false)
+          .setSuperracha(false);
+      Provider.of<RachasController>(context, listen: false).resetSuperracha();
+    } else {
+      Provider.of<RachasController>(context, listen: false).setSuperracha(true);
+    }
+    notifyListeners();
   }
 }

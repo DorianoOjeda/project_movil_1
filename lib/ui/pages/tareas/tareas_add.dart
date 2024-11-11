@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:project_1/controllers/taskController.dart';
+import 'package:project_1/controllers/taskcontroller.dart';
 import 'package:provider/provider.dart';
 
 class TareasAddPage extends StatefulWidget {
@@ -136,8 +136,7 @@ class _TareasAddPageState extends State<TareasAddPage> {
                 controller: _cantidadController,
                 keyboardType: TextInputType.number,
                 inputFormatters: [
-                  FilteringTextInputFormatter
-                      .digitsOnly, // Solo permite números
+                  FilteringTextInputFormatter.digitsOnly,
                 ],
                 decoration: InputDecoration(
                   labelText: 'Cantidad',
@@ -217,7 +216,6 @@ class _TareasAddPageState extends State<TareasAddPage> {
       if (!_esBooleana &&
           (_cantidadController.text.isEmpty ||
               int.tryParse(_cantidadController.text) == null)) {
-        // La cantidad es requerida y debe ser un número válido
         return;
       }
     });
