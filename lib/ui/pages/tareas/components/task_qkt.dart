@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
 import 'package:project_1/controllers/taskcontroller.dart';
-import 'package:project_1/models/tarea.dart';
+import 'package:project_1/entities/tarea.dart';
 import 'package:provider/provider.dart';
 
 class TaskQkt extends StatefulWidget {

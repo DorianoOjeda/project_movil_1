@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_1/controllers/rachascontroller.dart';
-import 'package:project_1/models/tarea.dart';
+import 'package:project_1/entities/tarea.dart';
 import 'package:provider/provider.dart';
 
 class TaskController extends ChangeNotifier {

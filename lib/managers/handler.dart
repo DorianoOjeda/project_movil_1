@@ -1,6 +1,6 @@
 import 'package:project_1/controllers/rachascontroller.dart';
 import 'package:project_1/controllers/taskcontroller.dart';
-import 'package:project_1/models/tarea.dart';
+import 'package:project_1/entities/tarea.dart';
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
 import 'package:project_1/ui/pages/calendar/calendar_widget.dart';
