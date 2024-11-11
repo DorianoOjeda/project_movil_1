@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
+import 'package:project_1/models/tarea.dart';
 
 class TareasPage extends StatefulWidget {
-  final List<Map<String, dynamic>> tareas;
+  final List<Tarea> tareas;
   const TareasPage({super.key, required this.tareas});
   @override
   State<TareasPage> createState() => _TareasPageState();
@@ -14,10 +15,10 @@ class _TareasPageState extends State<TareasPage> {
     return ListView.builder(
       itemCount: widget.tareas.length,
       itemBuilder: (context, index) {
-        Map<String, dynamic> tarea = widget.tareas[index];
+        Tarea tarea = widget.tareas[index];
         return Column(
           children: [
-            tarea['tipo'] == 'cuantificable'
+            tarea.tipo == 'cuantificable'
                 ? getTaskQkt(tarea)
                 : getTaskBool(tarea),
             const SizedBox(height: 2.0), // Espacio entre tareas

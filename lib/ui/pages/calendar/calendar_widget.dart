@@ -7,7 +7,6 @@ class CalendarWidget extends StatefulWidget {
     super.key,
     required this.selectedDayNotifier,
   });
-
   @override
   State<CalendarWidget> createState() => _CalendarWidgetState();
 }
@@ -15,7 +14,6 @@ class CalendarWidget extends StatefulWidget {
 class _CalendarWidgetState extends State<CalendarWidget> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   DateTime _focusedDay = DateTime.now();
-
   @override
   Widget build(BuildContext context) {
     return Container(

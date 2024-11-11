@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:project_1/managers/handler.dart';
 import 'package:project_1/ui/pages/auth/signup.dart';
 import 'package:project_1/ui/pages/init_page.dart';
 import 'package:project_1/ui/pages/navbar.dart';
 import 'package:project_1/ui/pages/auth/login.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (_) => getTaskController()),
+    ChangeNotifierProvider(create: (_) => getRachasController()),
+  ], child: const MyApp()));
 }
 
 class MyApp extends StatelessWidget {

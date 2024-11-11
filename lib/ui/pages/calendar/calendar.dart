@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
-import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/controllers/taskcontroller.dart';
+import 'package:provider/provider.dart';
 
 class Calendar extends StatefulWidget {
   const Calendar({super.key});
@@ -34,16 +35,19 @@ class _CalendarState extends State<Calendar> {
                 final selectedDate = selectedDay ?? DateTime.now();
                 return Expanded(
                   child: Container(
-                    padding:
-                        const EdgeInsets.only(left: 5, right: 5, bottom: 20),
-                    decoration: const BoxDecoration(
-                        color: Colors.white,
-                        borderRadius:
-                            BorderRadius.vertical(top: Radius.circular(20))),
-                    // Mostramos las tareas correspondientes a la fecha seleccionada
-                    child: getTareasListPage(
-                        TaskManager.instance.getTareasDelDia(selectedDate)),
-                  ),
+                      padding:
+                          const EdgeInsets.only(left: 5, right: 5, bottom: 20),
+                      decoration: const BoxDecoration(
+                          color: Colors.white,
+                          borderRadius:
+                              BorderRadius.vertical(top: Radius.circular(20))),
+                      // Mostramos las tareas correspondientes a la fecha seleccionada
+                      child: Consumer<TaskController>(
+                          builder: (context, taskManager, child) {
+                        taskManager.createTareasByDate(selectedDate);
+                        return getTareasListPage(
+                            taskManager.tareasDelDiaSelectedUnmodifiable);
+                      })),
                 );
               },
             ),

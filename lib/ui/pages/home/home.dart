@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:project_1/controllers/rachascontroller.dart';
 import 'package:project_1/managers/handler.dart';
-import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/controllers/taskcontroller.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -11,8 +13,6 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool showTasks = false;
   DateTime selectedDate = DateTime.now();
-  List<Map<String, dynamic>> tareas = [];
-
   void _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -23,14 +23,18 @@ class _HomePageState extends State<HomePage> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
+        // Reiniciamos las tareas del día y creamos las tareas correspondientes a la fecha seleccionada
+        // Esto se usa para mostrar el avance de los dias.
+        Provider.of<TaskController>(context, listen: false)
+            .restartTareasDelDia(context);
+        Provider.of<TaskController>(context, listen: false)
+            .createTareasDelDia(selectedDate, false);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> tareas =
-        TaskManager.instance.getTareasDelDia(selectedDate);
     return Scaffold(
       body: Stack(
         children: [
@@ -56,30 +60,37 @@ class _HomePageState extends State<HomePage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      "Hola [username]!",
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
+                    Consumer<TaskController>(
+                      builder: (context, taskManager, child) {
+                        return Text(
+                            "Tareas de hoy: ${taskManager.tareasDelDia.length.toString()}",
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ));
+                      },
                     ),
                     const SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        getRachaImage(getSuperRachaNumber(), 100, 100),
-                        const SizedBox(width: 10),
-                        Text(
-                          getSuperRachaNumber().toString(),
-                          style: const TextStyle(
-                            fontSize: 38,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
+                    Consumer<RachasController>(
+                        builder: (context, rachasManager, child) {
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          getRachaImage(
+                              rachasManager.superRachaNumber, 100, 100),
+                          const SizedBox(width: 10),
+                          Text(
+                            rachasManager.superRachaNumber.toString(),
+                            style: const TextStyle(
+                              fontSize: 38,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      );
+                    }),
                     const SizedBox(height: 30),
                     const Text(
                       "¿Qué harás hoy?",
@@ -106,17 +117,21 @@ class _HomePageState extends State<HomePage> {
                   color: Color.fromARGB(255, 235, 235, 235),
                   borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                 ),
-                child: tareas.isEmpty
-                    ? const Center(
-                        child: Text(
-                          "No tienes tareas para hoy",
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      )
-                    : getTareasListPage(tareas),
+                child: Consumer<TaskController>(
+                  builder: (context, taskManager, child) {
+                    return taskManager.isDairyTaskEmpty()
+                        ? const Center(
+                            child: Text(
+                              "No tienes tareas para hoy",
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : getTareasListPage(taskManager.tareasDelDia);
+                  },
+                ),
               ),
             ),
           Positioned(
@@ -193,9 +208,7 @@ class _HomePageState extends State<HomePage> {
                 const SizedBox(height: 5),
                 FloatingActionButton(
                   heroTag: 'uniqueFabTag2',
-                  onPressed: () {
-                    _selectDate(context);
-                  },
+                  onPressed: () => _selectDate(context),
                   child: const Icon(Icons.calendar_today),
                 ),
               ],

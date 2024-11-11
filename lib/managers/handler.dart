@@ -1,4 +1,6 @@
-import 'package:project_1/managers/taskmanager.dart';
+import 'package:project_1/controllers/rachascontroller.dart';
+import 'package:project_1/controllers/taskcontroller.dart';
+import 'package:project_1/models/tarea.dart';
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
 import 'package:project_1/ui/pages/calendar/calendar_widget.dart';
@@ -36,13 +38,13 @@ CalendarWidget getCalendarWidget(
   return CalendarWidget(selectedDayNotifier: selectedDayNotifier);
 }
 
-TaskQkt getTaskQkt(Map<String, dynamic> task) {
+TaskQkt getTaskQkt(Tarea task) {
   return TaskQkt(
     tarea: task,
   );
 }
 
-TaskBool getTaskBool(Map<String, dynamic> task) {
+TaskBool getTaskBool(Tarea task) {
   return TaskBool(
     tarea: task,
   );
@@ -74,7 +76,7 @@ ProfilePage getProfilePage() {
   return const ProfilePage();
 }
 
-TareasPage getTareasListPage(List<Map<String, dynamic>> tareas) {
+TareasPage getTareasListPage(List<Tarea> tareas) {
   return TareasPage(tareas: tareas);
 }
 
@@ -83,7 +85,7 @@ TareasAddPage getTareasAddPage() {
 }
 
 bool isRachaActive(int? racha) {
-  if (getSuperRachaNumber() > 0) {
+  if (getRachasController().superRachaNumber > 0) {
     return true;
   }
   if (racha != null) {
@@ -109,6 +111,11 @@ SizedBox getRachaImage(int racha, double width, double height,
   );
 }
 
-int getSuperRachaNumber() {
-  return TaskManager.instance.getSuperRacha();
+//get Controllers
+TaskController getTaskController() {
+  return TaskController.instance;
+}
+
+RachasController getRachasController() {
+  return RachasController.instance;
 }
