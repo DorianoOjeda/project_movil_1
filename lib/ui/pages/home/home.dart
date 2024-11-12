@@ -126,28 +126,28 @@ class _HomePageState extends State<HomePage> {
                         right: 0,
                         bottom: 0,
                         child: Container(
-                          margin: const EdgeInsets.only(bottom: 110),
-                          decoration: const BoxDecoration(
-                            color: Color.fromARGB(255, 235, 235, 235),
-                            borderRadius:
-                                BorderRadius.vertical(top: Radius.circular(20)),
-                          ),
-                          child: Consumer<TaskController>(
-                            builder: (context, taskManager, child) {
-                              return taskManager.isDairyTaskEmpty()
-                                  ? const Center(
-                                      child: Text(
-                                        "No tienes tareas para hoy",
-                                        style: TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    )
-                                  : getTareasListPage(taskManager.tareasDelDia);
-                            },
-                          ),
-                        ),
+                            margin: const EdgeInsets.only(bottom: 110),
+                            decoration: const BoxDecoration(
+                              color: Color.fromARGB(255, 235, 235, 235),
+                              borderRadius: BorderRadius.vertical(
+                                  top: Radius.circular(20)),
+                            ),
+                            child: Consumer<TaskController>(
+                              builder: (context, taskManager, child) {
+                                if (taskManager.isLoadingTasks) {
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                }
+                                return taskManager.isDairyTaskEmpty()
+                                    ? const Center(
+                                        child: Text("No tienes tareas para hoy",
+                                            style: TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold)))
+                                    : getTareasListPage(
+                                        taskManager.tareasDelDia);
+                              },
+                            )),
                       ),
                     Positioned(
                       bottom: 20,

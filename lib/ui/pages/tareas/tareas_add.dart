@@ -231,8 +231,8 @@ class _TareasAddPageState extends State<TareasAddPage> {
           ? ''
           : _descripcionController.text,
       tipo: _esBooleana ? 'booleano' : 'cuantificable',
-      cantidad: _esBooleana ? null : int.parse(_cantidadController.text),
-      cantidadProgreso: _esBooleana ? null : 0,
+      cantidad: _esBooleana ? 0 : int.parse(_cantidadController.text),
+      cantidadProgreso: _esBooleana ? 0 : 0,
       frecuencia: _frecuenciaRepeticion,
       fechaInicio: DateFormat('yyyy-MM-dd').format(_fechaInicio),
       completada: false,

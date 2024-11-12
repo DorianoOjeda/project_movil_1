@@ -51,7 +51,7 @@ class _TaskBoolState extends State<TaskBool> {
                       children: [
                         Consumer<TaskController>(
                           builder: (context, taskManager, child) {
-                            return getRachaImage(tarea.racha!, 25, 25,
+                            return getRachaImage(tarea.racha, 25, 25,
                                 completada: tarea.completada);
                           },
                         ),

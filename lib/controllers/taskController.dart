@@ -3,31 +3,53 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:project_1/controllers/rachascontroller.dart';
 import 'package:project_1/entities/tarea.dart';
+import 'package:project_1/managers/handler.dart';
 import 'package:provider/provider.dart';
 
 class TaskController extends ChangeNotifier {
-  TaskController._privateConstructor();
+  TaskController._privateConstructor() {
+    fetchTasks();
+  }
   static final TaskController instance = TaskController._privateConstructor();
 
   bool _isSameDay = false;
+  bool _isLoadingTasks = true;
 
-  final List<Tarea> _listOfTask = [];
+  List<Tarea>? _listOfTask;
   List<Tarea> _tareasDelDia = [];
-  List<Tarea> _tareasDelDiaSelected = []; // To use in calendar
+  List<Tarea> _tareasDelDiaSelected = [];
 
-  List<Tarea> get listOfTask => _listOfTask;
+  bool get isLoadingTasks => _isLoadingTasks;
+  List<Tarea>? get listOfTask => _listOfTask;
   List<Tarea> get tareasDelDia => _tareasDelDia;
   List<Tarea> get tareasDelDiaSelected => _tareasDelDiaSelected;
 
-  UnmodifiableListView<Tarea> get listOfTaskUnmodifiable =>
-      UnmodifiableListView(_listOfTask);
+  UnmodifiableListView<Tarea>? get listOfTaskUnmodifiable =>
+      _listOfTask != null ? UnmodifiableListView(_listOfTask!) : null;
   UnmodifiableListView<Tarea> get tareasDelDiaUnmodifiable =>
       UnmodifiableListView(_tareasDelDia);
   UnmodifiableListView<Tarea> get tareasDelDiaSelectedUnmodifiable =>
       UnmodifiableListView(_tareasDelDiaSelected);
 
+  Future<void> fetchTasks() async {
+    _isLoadingTasks = true;
+    notifyListeners();
+    _listOfTask = await getFirestoreData().getTasks();
+    _isLoadingTasks = false;
+    createTareasDelDia(DateTime.now(), false);
+    notifyListeners();
+  }
+
+  void setListOfTask(List<Tarea> tareas) {
+    _listOfTask = tareas;
+    notifyListeners();
+  }
+
   void addToList(Tarea tarea) {
-    _listOfTask.add(tarea);
+    _listOfTask!.add(tarea);
+    getFirestoreData().addTask(tarea.titulo, tarea.descripcion, tarea.tipo,
+        tarea.cantidad, tarea.frecuencia, tarea.fechaInicio, tarea.completada);
+    tarea.setId(getFirestoreData().taskUuid);
     if (tarea.fechaInicio == DateFormat('yyyy-MM-dd').format(DateTime.now())) {
       _isSameDay = true;
       _tareasDelDia.add(tarea);
@@ -36,7 +58,7 @@ class TaskController extends ChangeNotifier {
   }
 
   void createTareasDelDia(DateTime fecha, bool? isCalendar) {
-    List<Tarea> t = _listOfTask.where((tarea) {
+    List<Tarea> t = _listOfTask!.where((tarea) {
       DateTime tareaFormat = DateTime.parse(tarea.fechaInicio);
 
       if (isSameDay(tareaFormat, fecha)) {
@@ -82,11 +104,11 @@ class TaskController extends ChangeNotifier {
 
       return esDiaValido;
     }).toList();
-
     if (isCalendar != null && isCalendar) {
       _tareasDelDiaSelected = t;
     } else {
       _tareasDelDia = t;
+      notifyListeners();
     }
   }
 
@@ -98,8 +120,8 @@ class TaskController extends ChangeNotifier {
     required String titulo,
     required String descripcion,
     required String tipo,
-    required int? cantidad,
-    required int? cantidadProgreso,
+    required int cantidad,
+    required int cantidadProgreso,
     required String frecuencia,
     required String fechaInicio,
     required bool completada,
@@ -120,29 +142,29 @@ class TaskController extends ChangeNotifier {
 
   void marcarTareaComoCompletada(Tarea tarea, BuildContext context) {
     tarea.completada = true;
-    tarea.racha = tarea.racha! + 1;
+    tarea.racha = tarea.racha + 1;
     Provider.of<RachasController>(context, listen: false)
-        .verificarSuperracha(_listOfTask, _isSameDay);
+        .verificarSuperracha(_listOfTask!, _isSameDay);
     notifyListeners();
   }
 
   void incrementarCantidadProgreso(
       Tarea tarea, int cantidad, BuildContext context) {
-    if (tarea.cantidadProgreso! < tarea.cantidad!) {
-      tarea.cantidadProgreso = tarea.cantidadProgreso! + cantidad;
+    if (tarea.cantidadProgreso < tarea.cantidad) {
+      tarea.cantidadProgreso = tarea.cantidadProgreso + cantidad;
       if (tarea.cantidadProgreso == tarea.cantidad) {
         marcarTareaComoCompletada(tarea, context);
       }
     }
-    if (tarea.cantidadProgreso! >= tarea.cantidad!) {
+    if (tarea.cantidadProgreso >= tarea.cantidad) {
       tarea.cantidadProgreso = tarea.cantidad;
     }
     notifyListeners();
   }
 
   void decrementarCantidadProgreso(Tarea tarea, int cantidad) {
-    tarea.cantidadProgreso = tarea.cantidadProgreso! - cantidad;
-    if (tarea.cantidadProgreso! < 0) {
+    tarea.cantidadProgreso = tarea.cantidadProgreso - cantidad;
+    if (tarea.cantidadProgreso < 0) {
       tarea.cantidadProgreso = 0;
     }
     notifyListeners();
@@ -175,6 +197,10 @@ class TaskController extends ChangeNotifier {
     }
     _tareasDelDia.removeRange(0, _tareasDelDia.length);
     _isSameDay = false;
+    for (var task in _listOfTask!) {
+      getFirestoreData().updateTask(
+          task.id!, task.cantidadProgreso, task.completada, task.racha);
+    }
     notifyListeners();
   }
 }
