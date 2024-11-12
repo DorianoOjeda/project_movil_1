@@ -12,6 +12,7 @@ class SignupPage extends StatefulWidget {
 class _SignupPageState extends State<SignupPage> {
   final mailController = TextEditingController();
   final passwordController = TextEditingController();
+  final nameController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -63,18 +64,19 @@ class _SignupPageState extends State<SignupPage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
+                        controller: nameController,
                         style: const TextStyle(color: Colors.white),
                         validator: MultiValidator([
                           RequiredValidator(
-                              errorText: 'Please enter your first name'),
+                              errorText: 'Please enter your name'),
                           MinLengthValidator(3,
                               errorText:
                                   'First name must be at least 3 characters long'),
                         ]).call,
                         decoration: const InputDecoration(
                           labelStyle: TextStyle(color: Colors.white),
-                          hintText: 'Enter first name',
-                          labelText: 'First name',
+                          hintText: 'Enter name',
+                          labelText: 'Name',
                           prefixIcon: Icon(
                             Icons.person,
                             color: Colors.grey,
@@ -85,31 +87,6 @@ class _SignupPageState extends State<SignupPage> {
                                 BorderRadius.all(Radius.circular(9.0)),
                           ),
                         ),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: TextFormField(
-                        style: const TextStyle(color: Colors.white),
-                        validator: MultiValidator([
-                          RequiredValidator(
-                              errorText: 'Please enter your last name'),
-                          MinLengthValidator(3,
-                              errorText:
-                                  'Last name must be at least 3 characters long'),
-                        ]).call,
-                        decoration: const InputDecoration(
-                            labelStyle: TextStyle(color: Colors.white),
-                            hintText: 'Enter last name',
-                            labelText: 'Last name',
-                            prefixIcon: Icon(
-                              Icons.person,
-                              color: Colors.grey,
-                            ),
-                            errorStyle: TextStyle(fontSize: 18.0),
-                            border: OutlineInputBorder(
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(9.0)))),
                       ),
                     ),
                     Padding(
@@ -187,12 +164,14 @@ class _SignupPageState extends State<SignupPage> {
                             'Register',
                             style: TextStyle(color: Colors.white, fontSize: 22),
                           ),
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formkey.currentState!.validate()) {
-                              getAuthRemote().signUp(
-                                mailController.text,
+                              await getAuthRemote().signUp(
+                                mailController.text.toLowerCase().trim(),
                                 passwordController.text,
                               );
+                              await getAuthRemote()
+                                  .setUserName(nameController.text);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('User registered successfully'),

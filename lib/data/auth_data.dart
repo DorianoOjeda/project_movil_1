@@ -16,8 +16,9 @@ class AuthRemote extends AuthData {
     try {
       await _auth.createUserWithEmailAndPassword(
           email: email, password: password);
+      _auth.currentUser!.sendEmailVerification();
     } catch (e) {
-      print(e.toString());
+      throw Exception('Error during sign up: $e');
     }
   }
 
@@ -26,7 +27,7 @@ class AuthRemote extends AuthData {
     try {
       await _auth.signInWithEmailAndPassword(email: email, password: password);
     } catch (e) {
-      print(e.toString());
+      throw Exception('Error during sign up: $e');
     }
   }
 
@@ -44,4 +45,12 @@ class AuthRemote extends AuthData {
   Future<String> getUserId() async {
     return _auth.currentUser!.uid;
   }
+
+  Future<void> setUserName(String name) async {
+    await _auth.currentUser!.updateDisplayName(name);
+  }
+
+  User? get currentUser => _auth.currentUser;
+  String get currentUserName => _auth.currentUser!.displayName!;
+  String get currentUserEmail => _auth.currentUser!.email!;
 }

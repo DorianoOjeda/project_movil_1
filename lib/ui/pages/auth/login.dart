@@ -128,9 +128,9 @@ class _LoginPageState extends State<LoginPage> {
                           'Let\'s Go',
                           style: TextStyle(color: Colors.white, fontSize: 22),
                         ),
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formkey.currentState!.validate()) {
-                            getAuthRemote().signIn(
+                            await getAuthRemote().signIn(
                                 mailController.text, passwordController.text);
                             Navigator.pushNamed(
                               context,
