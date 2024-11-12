@@ -53,16 +53,16 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  "[username]",
-                  style: TextStyle(
+                Text(
+                  getAuthRemote().currentUserName,
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
-                  "[email]",
+                Text(
+                  getAuthRemote().currentUserEmail,
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
@@ -70,8 +70,6 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                getNavigationButton('/editProfile', "Edit Profile"),
-                const SizedBox(height: 30),
                 const Divider(),
                 const SizedBox(height: 10),
                 getProfileMenuWidget(
@@ -96,6 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 ),
                                 TextButton(
                                   onPressed: () {
+                                    getAuthRemote().signOut();
                                     Navigator.of(context)
                                         .pushNamedAndRemoveUntil('/login',
                                             (Route<dynamic> route) => false);

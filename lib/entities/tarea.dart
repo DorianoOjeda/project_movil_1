@@ -1,13 +1,14 @@
 class Tarea {
+  String? id;
   String titulo;
   String descripcion;
   String tipo;
-  int? cantidad;
-  int? cantidadProgreso;
+  int cantidad;
+  int cantidadProgreso;
   String frecuencia;
   String fechaInicio;
   bool completada;
-  int? racha;
+  int racha;
 
   Tarea(
       {required this.titulo,
@@ -19,6 +20,10 @@ class Tarea {
       required this.fechaInicio,
       required this.completada,
       required this.racha});
+
+  void setId(String id) {
+    this.id = id;
+  }
 
   Map<String, dynamic> toMap() {
     return {

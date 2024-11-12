@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
-import 'package:project_1/models/tarea.dart';
+import 'package:project_1/entities/tarea.dart';
 
 class TareasPage extends StatefulWidget {
   final List<Tarea> tareas;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project_1/models/tarea.dart';
+import 'package:project_1/entities/tarea.dart';
 
 class RachasController extends ChangeNotifier {
   RachasController._privateConstructor();

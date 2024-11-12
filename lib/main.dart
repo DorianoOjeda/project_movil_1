@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:project_1/firebase_options.dart';
 import 'package:project_1/managers/handler.dart';
 import 'package:project_1/ui/pages/auth/signup.dart';
 import 'package:project_1/ui/pages/init_page.dart';
 import 'package:project_1/ui/pages/navbar.dart';
 import 'package:project_1/ui/pages/auth/login.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (_) => getTaskController()),
     ChangeNotifierProvider(create: (_) => getRachasController()),

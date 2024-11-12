@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project_1/managers/handler.dart';
 import 'package:project_1/controllers/taskcontroller.dart';
-import 'package:project_1/models/tarea.dart';
+import 'package:project_1/entities/tarea.dart';
 import 'package:provider/provider.dart';
 
 class TaskQkt extends StatefulWidget {
@@ -15,7 +15,7 @@ class _TaskQktState extends State<TaskQkt> {
   @override
   Widget build(BuildContext context) {
     Tarea tarea = widget.tarea;
-    final int cantidadMaxima = tarea.cantidad ?? 1;
+    final int cantidadMaxima = tarea.cantidad;
 
     return Container(
       margin: const EdgeInsets.only(right: 5, left: 5),
@@ -42,10 +42,10 @@ class _TaskQktState extends State<TaskQkt> {
                 ),
               ),
               if (!tarea.completada) ...[
-                if (tarea.racha != null && tarea.racha! > 0)
+                if (tarea.racha > 0)
                   Row(
                     children: [
-                      getRachaImage(tarea.racha!, 25, 25,
+                      getRachaImage(tarea.racha, 25, 25,
                           completada: tarea.completada),
                       const SizedBox(width: 5),
                       Text(
@@ -84,7 +84,7 @@ class _TaskQktState extends State<TaskQkt> {
                         icon: const Icon(Icons.add,
                             size: 17, color: Colors.white),
                         onPressed: () {
-                          if (tarea.cantidadProgreso! < cantidadMaxima) {
+                          if (tarea.cantidadProgreso < cantidadMaxima) {
                             Provider.of<TaskController>(context, listen: false)
                                 .incrementarCantidadProgreso(tarea, 1, context);
                           }
@@ -94,12 +94,12 @@ class _TaskQktState extends State<TaskQkt> {
                   ),
                 ),
               ] else ...[
-                if (tarea.racha != null && tarea.racha! > 0)
+                if (tarea.racha > 0)
                   Row(
                     children: [
                       Consumer<TaskController>(
                         builder: (context, taskManager, child) {
-                          return getRachaImage(tarea.racha!, 25, 25,
+                          return getRachaImage(tarea.racha, 25, 25,
                               completada: tarea.completada);
                         },
                       ),
@@ -131,11 +131,11 @@ class _TaskQktState extends State<TaskQkt> {
                 LinearProgressIndicator(
                   minHeight: 10,
                   value: cantidadMaxima > 0
-                      ? (tarea.cantidadProgreso ?? 0) / cantidadMaxima
+                      ? (tarea.cantidadProgreso) / cantidadMaxima
                       : 0,
                 ),
                 prederminedText(
-                  "${tarea.cantidadProgreso ?? 0} / ${tarea.cantidad}",
+                  "${tarea.cantidadProgreso} / ${tarea.cantidad}",
                   13,
                 ),
               ],
