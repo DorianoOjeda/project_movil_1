@@ -10,6 +10,8 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final mailController = TextEditingController();
+  final passwordController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -54,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      controller: mailController,
                       style: const TextStyle(color: Colors.white),
                       validator: MultiValidator([
                         RequiredValidator(
@@ -80,6 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
+                      controller: passwordController,
                       style: const TextStyle(color: Colors.white),
                       obscureText: true,
                       keyboardType: TextInputType.text,
@@ -125,14 +129,14 @@ class _LoginPageState extends State<LoginPage> {
                           style: TextStyle(color: Colors.white, fontSize: 22),
                         ),
                         onPressed: () {
-                          Navigator.pushNamed(context, '/navigation');
-                          //add auth method for Project 2
-                          // if (_formkey.currentState!.validate()) {
-                          //   Navigator.pushNamed(
-                          //     context,
-                          //     '/navigation',
-                          //   );
-                          // }
+                          if (_formkey.currentState!.validate()) {
+                            getAuthRemote().signIn(
+                                mailController.text, passwordController.text);
+                            Navigator.pushNamed(
+                              context,
+                              '/navigation',
+                            );
+                          }
                         },
                       ),
                     ),

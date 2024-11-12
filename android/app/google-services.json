@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "868138563824",
+    "project_id": "todo-mimejorser",
+    "storage_bucket": "todo-mimejorser.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:868138563824:android:7361909bf60b9b227aea35",
+        "android_client_info": {
+          "package_name": "mimejorser.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCQpCZocBDkei_B5mF8gDLXa4lan7j0bbQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

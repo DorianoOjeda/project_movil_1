@@ -1,4 +1,4 @@
-package com.example.project_1
+package mimejorser.app
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,5 +1,6 @@
 import 'package:project_1/controllers/rachascontroller.dart';
 import 'package:project_1/controllers/taskcontroller.dart';
+import 'package:project_1/data/auth_data.dart';
 import 'package:project_1/entities/tarea.dart';
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
@@ -118,4 +119,8 @@ TaskController getTaskController() {
 
 RachasController getRachasController() {
   return RachasController.instance;
+}
+
+AuthRemote getAuthRemote() {
+  return AuthRemote();
 }

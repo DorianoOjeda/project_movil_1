@@ -10,6 +10,8 @@ class SignupPage extends StatefulWidget {
 }
 
 class _SignupPageState extends State<SignupPage> {
+  final mailController = TextEditingController();
+  final passwordController = TextEditingController();
   final _formkey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
@@ -113,6 +115,7 @@ class _SignupPageState extends State<SignupPage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
+                        controller: mailController,
                         style: const TextStyle(color: Colors.white),
                         validator: MultiValidator([
                           RequiredValidator(
@@ -138,8 +141,9 @@ class _SignupPageState extends State<SignupPage> {
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: TextFormField(
+                        controller: passwordController,
                         style: const TextStyle(color: Colors.white),
-                        obscureText: true, // Para ocultar la contraseña
+                        obscureText: true,
                         keyboardType: TextInputType.text,
                         validator: MultiValidator([
                           RequiredValidator(
@@ -185,7 +189,15 @@ class _SignupPageState extends State<SignupPage> {
                           ),
                           onPressed: () {
                             if (_formkey.currentState!.validate()) {
-                              // Form is valid, proceed with your logic
+                              getAuthRemote().signUp(
+                                mailController.text,
+                                passwordController.text,
+                              );
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('User registered successfully'),
+                                ),
+                              );
                               Navigator.pushNamed(
                                 context,
                                 '/initialPage',
