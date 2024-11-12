@@ -172,6 +172,8 @@ class _SignupPageState extends State<SignupPage> {
                               );
                               await getAuthRemote()
                                   .setUserName(nameController.text);
+                              await getFirestoreData()
+                                  .setName(nameController.text);
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
                                   content: Text('User registered successfully'),

@@ -1,6 +1,7 @@
 import 'package:project_1/controllers/rachascontroller.dart';
 import 'package:project_1/controllers/taskcontroller.dart';
 import 'package:project_1/data/auth_data.dart';
+import 'package:project_1/data/firestore.dart';
 import 'package:project_1/entities/tarea.dart';
 import 'package:project_1/ui/components/logo.dart';
 import 'package:project_1/ui/components/navigationbtn.dart';
@@ -123,4 +124,8 @@ RachasController getRachasController() {
 
 AuthRemote getAuthRemote() {
   return AuthRemote();
+}
+
+FirestoreData getFirestoreData() {
+  return FirestoreData();
 }

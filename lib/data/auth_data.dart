@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:project_1/managers/handler.dart';
 
 abstract class AuthData {
   Future<void> signUp(String email, String password);
@@ -25,7 +26,11 @@ class AuthRemote extends AuthData {
   @override
   Future<void> signIn(String email, String password) async {
     try {
-      await _auth.signInWithEmailAndPassword(email: email, password: password);
+      await _auth
+          .signInWithEmailAndPassword(email: email, password: password)
+          .then(
+            (value) => getFirestoreData().createUser(email),
+          );
     } catch (e) {
       throw Exception('Error during sign up: $e');
     }
